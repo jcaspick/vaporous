@@ -3,6 +3,7 @@
 #include "GL.h"
 #include "OrbitCamera.h"
 #include "Observer.h"
+#include "MeshUtilities.h"
 
 #include <memory>
 
@@ -29,6 +30,8 @@ private:
 
 	float _lastFrame;
 
-	GLuint vbo, vao;
+	GLuint vbo, ebo, vao;
 	Shader* shader;
+
+	Mesh arc;
 };

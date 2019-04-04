@@ -19,93 +19,105 @@
     <Filter Include="Include">
       <UniqueIdentifier>{67a423ce-4e78-48dc-8b2c-a08dc37d4782}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Demo">
+      <UniqueIdentifier>{3c6fccbc-2734-40bc-bdbc-a6d8eec1535f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{483406f5-8d71-4b70-9536-f7313d08aeb7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FreeCamera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GL.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="InputManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Demo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EventManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OrbitCamera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="glad.c">
       <Filter>Include</Filter>
     </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="EventManager.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GL.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="OrbitCamera.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
+    <ClCompile Include="Demo.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
+    <ClCompile Include="FreeCamera.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FreeCamera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GL.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="InputManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Demo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Context.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EventData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EventManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Observer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceIdentifiers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OrbitCamera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="stb_image.h">
       <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Context.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="EventData.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="EventManager.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="GL.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Observer.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceIdentifiers.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="OrbitCamera.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="Demo.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="FreeCamera.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshUtilities.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshData.h">
+      <Filter>Demo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

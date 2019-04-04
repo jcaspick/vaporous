@@ -143,6 +143,8 @@
     <ClInclude Include="FreeCamera.h" />
     <ClInclude Include="GL.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="MeshData.h" />
+    <ClInclude Include="MeshUtilities.h" />
     <ClInclude Include="Observer.h" />
     <ClInclude Include="OrbitCamera.h" />
     <ClInclude Include="ResourceIdentifiers.h" />

@@ -24,7 +24,8 @@ Demo::Demo() :
 
 	// initialize window (create viewport)
 	_window->init();
-	_window->setClearColor(vec4(0.8f, 0.6f, 0.8f, 1.0f));
+	//_window->setClearColor(vec4(0.8f, 0.6f, 0.8f, 1.0f));
+	_window->setClearColor(vec4(0.1f, 0.1f, 0.1f, 1.0f));
 
 	// connect systems
 	_context.gl = &_glContext;
@@ -46,72 +47,41 @@ Demo::~Demo() {
 }
 
 void Demo::init() {
-	float vertices[] = {
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-		0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-		0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-	};
+	arc = MeshUtil::arcMesh(5, 45, 2, 8);
 
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
+	glGenBuffers(1, &ebo);
 
 	glBindVertexArray(vao);
+
+	// vertices
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, arc.vertices.size() * sizeof(Vertex), 
+		&arc.vertices[0], GL_STATIC_DRAW);
 
 	// position attribute
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+		(void*)offsetof(Vertex, position));
 	
 	// texture coord attribute
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 
-		(void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+		(void*)offsetof(Vertex, uv));
+
+	// indices
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, arc.indices.size() * sizeof(GLuint),
+		&arc.indices[0], GL_STATIC_DRAW);
+
 	
 
 	_resourceMgr.loadTexture(Textures::YungFrink, 
 		"resources/yungFrink.png", false);
 	_resourceMgr.loadTexture(Textures::Rainbow,
 		"resources/gradients.png", false);
-	_resourceMgr.bindTexture(Textures::Rainbow);
+	_resourceMgr.bindTexture(Textures::YungFrink);
 
 	shader = _resourceMgr.loadShader(Shaders::BasicTextured, 
 		"shaders/basic.vert", "shaders/basic_textured.frag");
@@ -141,7 +111,7 @@ void Demo::draw() {
 	shader->setMat4("model", mat4(1));
 	shader->setMat4("view", _cam->getViewMatrix());
 	shader->setMat4("projection", _cam->getProjectionMatrix());
-	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glDrawElements(GL_TRIANGLES, arc.indices.size(), GL_UNSIGNED_INT, 0);
 
 	_window->endDraw();
 }
