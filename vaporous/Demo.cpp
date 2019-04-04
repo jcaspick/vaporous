@@ -6,7 +6,8 @@
 
 Demo::Demo() :
 	_lastFrame(0),
-	_resourceMgr(&_context)
+	_resourceMgr(&_context),
+	arc2(&_context, 10, 45, 1, 8)
 {
 	// initialize GLFW
 	glfwInit();
@@ -39,8 +40,6 @@ Demo::Demo() :
 
 	// camera
 	_cam = p_Camera(new OrbitCamera(&_context));
-
-	initDebugGeo();
 }
 
 Demo::~Demo() {
@@ -88,6 +87,9 @@ void Demo::init() {
 	_debugShader = _resourceMgr.loadShader(Shaders::SingleColor,
 		"shaders/basic.vert", "shaders/basic_singleColor.frag");
 	_resourceMgr.bindShader(Shaders::BasicTextured);
+
+	initDebugGeo();
+	arc2.init();
 }
 
 void Demo::run() {
@@ -103,6 +105,9 @@ void Demo::run() {
 }
 
 void Demo::update(float dt) {
+	quat oldRot = arc2.getRotation();
+	arc2.setPosition(vec3(4, 0, 0));
+	arc2.setRotation(glm::angleAxis(dt * 1, vec3(0, 1, 0)) * oldRot);
 	_cam->handleInput();
 }
 
@@ -114,13 +119,17 @@ void Demo::draw() {
 	drawPoint(vec3(0, 1, 0), vec4(0, 1, 0, 1), 0.1f);
 	drawPoint(vec3(0, 0, 1), vec4(0, 0, 1, 1), 0.1f);
 
-	_resourceMgr.bindShader(Shaders::BasicTextured);
-	_glContext.bindVAO(vao);
-	_glContext.setLineMode(false);
-	shader->setMat4("model", glm::translate(mat4(1), vec3(0, 0, 0)));
-	shader->setMat4("view", _cam->getViewMatrix());
-	shader->setMat4("projection", _cam->getProjectionMatrix());
-	glDrawElements(GL_TRIANGLES, arc.indices.size(), GL_UNSIGNED_INT, 0);
+	drawPoint(arc2.getPosition(), vec4(1, 1, 1, 1), 0.5f);
+
+	//_resourceMgr.bindShader(Shaders::BasicTextured);
+	//_glContext.bindVAO(vao);
+	//_glContext.setLineMode(false);
+	//shader->setMat4("model", glm::translate(mat4(1), vec3(0, 0, 0)));
+	//shader->setMat4("view", _cam->getViewMatrix());
+	//shader->setMat4("projection", _cam->getProjectionMatrix());
+	//glDrawElements(GL_TRIANGLES, arc.indices.size(), GL_UNSIGNED_INT, 0);
+
+	arc2.draw(_cam.get());
 
 	_window->endDraw();
 }

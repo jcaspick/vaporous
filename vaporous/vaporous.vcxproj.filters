@@ -63,6 +63,12 @@
     <ClCompile Include="main.cpp">
       <Filter>Demo</Filter>
     </ClCompile>
+    <ClCompile Include="Arc.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
+    <ClCompile Include="Transformable.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h">
@@ -117,6 +123,12 @@
       <Filter>Demo</Filter>
     </ClInclude>
     <ClInclude Include="MeshData.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="Arc.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="Transformable.h">
       <Filter>Demo</Filter>
     </ClInclude>
   </ItemGroup>

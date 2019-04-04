@@ -4,6 +4,7 @@
 #include "OrbitCamera.h"
 #include "Observer.h"
 #include "MeshUtilities.h"
+#include "Arc.h"
 
 #include <memory>
 
@@ -40,4 +41,5 @@ private:
 	Shader* _debugShader;
 
 	Mesh arc;
+	aArc arc2;
 };

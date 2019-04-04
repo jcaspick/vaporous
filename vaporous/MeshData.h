@@ -15,7 +15,7 @@ struct Vertex {
 };
 
 using Vertices = std::vector<Vertex>;
-using Indices = std::vector<GLuint>;
+using Indices = std::vector<unsigned int>;
 
 struct Mesh {
 	Vertices vertices;
