@@ -121,10 +121,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="basic.vert">
+    <None Include="shaders\basic_textured.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="basic_textured.frag">
+    <None Include="shaders\basic.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\basic_singleColor.frag">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

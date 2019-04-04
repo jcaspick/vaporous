@@ -6,5 +6,6 @@ enum class Textures {
 };
 
 enum class Shaders {
-	BasicTextured
+	BasicTextured,
+	SingleColor
 };

@@ -39,6 +39,8 @@ Demo::Demo() :
 
 	// camera
 	_cam = p_Camera(new OrbitCamera(&_context));
+
+	initDebugGeo();
 }
 
 Demo::~Demo() {
@@ -47,7 +49,7 @@ Demo::~Demo() {
 }
 
 void Demo::init() {
-	arc = MeshUtil::arcMesh(5, 45, 2, 8);
+	arc = MeshUtil::arcCCW(5, 45, 2, 8);
 
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
@@ -75,8 +77,6 @@ void Demo::init() {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, arc.indices.size() * sizeof(GLuint),
 		&arc.indices[0], GL_STATIC_DRAW);
 
-	
-
 	_resourceMgr.loadTexture(Textures::YungFrink, 
 		"resources/yungFrink.png", false);
 	_resourceMgr.loadTexture(Textures::Rainbow,
@@ -85,12 +85,14 @@ void Demo::init() {
 
 	shader = _resourceMgr.loadShader(Shaders::BasicTextured, 
 		"shaders/basic.vert", "shaders/basic_textured.frag");
+	_debugShader = _resourceMgr.loadShader(Shaders::SingleColor,
+		"shaders/basic.vert", "shaders/basic_singleColor.frag");
 	_resourceMgr.bindShader(Shaders::BasicTextured);
 }
 
 void Demo::run() {
 	while (_window->isOpen()) {
-		float currentFrame = glfwGetTime();
+		float currentFrame = static_cast<float>(glfwGetTime());
 		float deltaTime = currentFrame - _lastFrame;
 		_lastFrame = currentFrame;
 
@@ -107,13 +109,34 @@ void Demo::update(float dt) {
 void Demo::draw() {
 	_window->beginDraw();
 
+	drawPoint(vec3(0), vec4(1, 1, 1, 1), 1);
+	drawPoint(vec3(1, 0, 0), vec4(1, 0, 0, 1), 0.1f);
+	drawPoint(vec3(0, 1, 0), vec4(0, 1, 0, 1), 0.1f);
+	drawPoint(vec3(0, 0, 1), vec4(0, 0, 1, 1), 0.1f);
+
+	_resourceMgr.bindShader(Shaders::BasicTextured);
 	_glContext.bindVAO(vao);
-	shader->setMat4("model", mat4(1));
+	_glContext.setLineMode(false);
+	shader->setMat4("model", glm::translate(mat4(1), vec3(0, 0, 0)));
 	shader->setMat4("view", _cam->getViewMatrix());
 	shader->setMat4("projection", _cam->getProjectionMatrix());
 	glDrawElements(GL_TRIANGLES, arc.indices.size(), GL_UNSIGNED_INT, 0);
 
 	_window->endDraw();
+}
+
+void Demo::drawPoint(vec3 point, vec4 color, float size) {
+	_glContext.useShader(_debugShader->id);
+	_glContext.bindVAO(pointVao);
+	_glContext.setLineMode(true);
+
+	mat4 model = glm::scale(glm::translate(mat4(1), point), vec3(size));
+	_debugShader->setMat4("model", model);
+	_debugShader->setMat4("view", _cam->getViewMatrix());
+	_debugShader->setMat4("projection", _cam->getProjectionMatrix());
+	_debugShader->setVec4("color", color);
+
+	glDrawArrays(GL_LINES, 0, 6);
 }
 
 void Demo::handleEvent(EventType type, EventData data) {
@@ -123,4 +146,25 @@ void Demo::handleEvent(EventType type, EventData data) {
 			_window->close();
 		break;
 	}
+}
+
+void Demo::initDebugGeo() {
+	float vertices[] = {
+		-1.0f,  0.0f,  0.0f,
+		 1.0f,  0.0f,  0.0f,
+		 0.0f, -1.0f,  0.0f,
+		 0.0f,  1.0f,  0.0f,
+		 0.0f,  0.0f, -1.0f,
+		 0.0f,  0.0f,  1.0f
+	};
+
+	glGenVertexArrays(1, &pointVao);
+	glGenBuffers(1, &pointVbo);
+
+	glBindVertexArray(pointVao);
+	glBindBuffer(GL_ARRAY_BUFFER, pointVbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 }
