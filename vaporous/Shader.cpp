@@ -25,7 +25,7 @@ bool Shader::loadFromFile(const std::string& vertFile,
 		}
 		if (!fragFStream.is_open()) {
 			std::cout << "Error: failed to load fragment shader at path "
-				<< vertFile << std::endl;
+				<< fragFile << std::endl;
 		}
 
 		std::stringstream vertSStream, fragSStream;
@@ -44,7 +44,7 @@ bool Shader::loadFromFile(const std::string& vertFile,
 
 			if (!geoFStream.is_open()) {
 				std::cout << "Error: failed to load geometry shader at path "
-					<< vertFile << std::endl;
+					<< geoFile << std::endl;
 			}
 
 			std::stringstream geoSStream;
