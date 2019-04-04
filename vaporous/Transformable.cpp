@@ -1,6 +1,5 @@
 #include "Transformable.h"
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/quaternion.hpp>
 
 Transformable::Transformable() :
 	_position(vec3(0)),

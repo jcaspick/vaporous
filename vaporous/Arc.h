@@ -11,9 +11,14 @@ public:
 	void init();
 	void draw(OrbitCamera* cam);
 
+	vec3 getEndPoint();
+	quat getEndRot();
+
 private:
 	Context* _context;
 	Mesh mesh;
+
+	float _angle, _radius;
 
 	unsigned int vao, vbo, ebo;
 	Shader* shader;

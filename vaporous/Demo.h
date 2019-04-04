@@ -42,4 +42,5 @@ private:
 
 	Mesh arc;
 	aArc arc2;
+	aArc arc3;
 };

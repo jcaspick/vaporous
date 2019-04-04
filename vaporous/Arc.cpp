@@ -3,7 +3,9 @@
 
 aArc::aArc(Context* context, float radius, float angle, 
 	float width, float divisions) :
-	_context(context)
+	_context(context),
+	_angle(angle),
+	_radius(radius)
 {
 	mesh = MeshUtil::arcCW(radius, angle, width, divisions);
 }
@@ -46,4 +48,15 @@ void aArc::draw(OrbitCamera* cam) {
 	shader->setMat4("view", cam->getViewMatrix());
 	shader->setMat4("projection", cam->getProjectionMatrix());
 	glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
+}
+
+vec3 aArc::getEndPoint() {
+	float rad = glm::radians(_angle);
+	vec3 localPoint = vec3(cos(rad), 0, sin(rad)) * _radius
+		- vec3(_radius, 0, 0);
+	return (_rotation * localPoint) + _position;
+}
+
+quat aArc::getEndRot() {
+	return _rotation * glm::angleAxis(glm::radians(-_angle), vec3(0, 1, 0));
 }

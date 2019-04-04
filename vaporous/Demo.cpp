@@ -7,7 +7,8 @@
 Demo::Demo() :
 	_lastFrame(0),
 	_resourceMgr(&_context),
-	arc2(&_context, 10, 45, 1, 8)
+	arc2(&_context, 4, 70, 1, 8),
+	arc3(&_context, 5, 37, 1, 7)
 {
 	// initialize GLFW
 	glfwInit();
@@ -90,6 +91,7 @@ void Demo::init() {
 
 	initDebugGeo();
 	arc2.init();
+	arc3.init();
 }
 
 void Demo::run() {
@@ -108,6 +110,8 @@ void Demo::update(float dt) {
 	quat oldRot = arc2.getRotation();
 	arc2.setPosition(vec3(4, 0, 0));
 	arc2.setRotation(glm::angleAxis(dt * 1, vec3(0, 1, 0)) * oldRot);
+	arc3.setPosition(arc2.getEndPoint());
+	arc3.setRotation(arc2.getEndRot());
 	_cam->handleInput();
 }
 
@@ -120,6 +124,7 @@ void Demo::draw() {
 	drawPoint(vec3(0, 0, 1), vec4(0, 0, 1, 1), 0.1f);
 
 	drawPoint(arc2.getPosition(), vec4(1, 1, 1, 1), 0.5f);
+	drawPoint(arc2.getEndPoint(), vec4(1, 1, 1, 1), 0.5f);
 
 	//_resourceMgr.bindShader(Shaders::BasicTextured);
 	//_glContext.bindVAO(vao);
@@ -130,6 +135,7 @@ void Demo::draw() {
 	//glDrawElements(GL_TRIANGLES, arc.indices.size(), GL_UNSIGNED_INT, 0);
 
 	arc2.draw(_cam.get());
+	arc3.draw(_cam.get());
 
 	_window->endDraw();
 }
