@@ -9,8 +9,8 @@ using mat4 = glm::mat4;
 
 class Camera {
 public:
-	virtual mat4 getViewMatrix() = 0;
-	virtual mat4 getProjectionMatrix() = 0;
+	virtual mat4 getViewMatrix() { return mat4(1); };
+	virtual mat4 getProjectionMatrix() { return mat4(1); };
 };
 
 #endif // ! CAMERA

@@ -69,6 +69,15 @@
     <ClCompile Include="Transformable.cpp">
       <Filter>Demo</Filter>
     </ClCompile>
+    <ClCompile Include="RoadSegment.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
+    <ClCompile Include="Road.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h">
@@ -129,6 +138,15 @@
       <Filter>Demo</Filter>
     </ClInclude>
     <ClInclude Include="Transformable.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="RoadSegment.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="Road.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
       <Filter>Demo</Filter>
     </ClInclude>
   </ItemGroup>

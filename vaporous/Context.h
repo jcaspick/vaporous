@@ -2,6 +2,7 @@
 #include "GL.h"
 #include "Window.h"
 #include "ResourceManager.h"
+#include "Renderer.h"
 
 struct Context {
 	Context() :
@@ -9,7 +10,8 @@ struct Context {
 		window(nullptr),
 		inputMgr(nullptr),
 		eventMgr(nullptr),
-		resourceMgr(nullptr)
+		resourceMgr(nullptr),
+		renderer(nullptr)
 	{}
 
 	GL* gl;
@@ -17,4 +19,5 @@ struct Context {
 	InputManager* inputMgr;
 	EventManager* eventMgr;
 	ResourceManager* resourceMgr;
+	Renderer* renderer;
 };

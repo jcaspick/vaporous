@@ -130,7 +130,10 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OrbitCamera.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="Road.cpp" />
+    <ClCompile Include="RoadSegment.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Transformable.cpp" />
@@ -150,8 +153,11 @@
     <ClInclude Include="MeshUtilities.h" />
     <ClInclude Include="Observer.h" />
     <ClInclude Include="OrbitCamera.h" />
+    <ClInclude Include="Renderer.h" />
     <ClInclude Include="ResourceIdentifiers.h" />
     <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="Road.h" />
+    <ClInclude Include="RoadSegment.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Texture.h" />

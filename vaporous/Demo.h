@@ -5,6 +5,7 @@
 #include "Observer.h"
 #include "MeshUtilities.h"
 #include "Arc.h"
+#include "Renderer.h"
 
 #include <memory>
 
@@ -23,24 +24,12 @@ public:
 	virtual void handleEvent(EventType type, EventData data) override;
 
 private:
-	void initDebugGeo();
-	void drawPoint(vec3 point, vec4 color, float size = 1);
-
 	Context _context;
 	GL _glContext;
 	p_Window _window;
 	ResourceManager _resourceMgr;
+	Renderer _renderer;
 	p_Camera _cam;
 
 	float _lastFrame;
-
-	GLuint vbo, ebo, vao;
-	Shader* shader;
-
-	GLuint pointVbo, pointVao;
-	Shader* _debugShader;
-
-	Mesh arc;
-	aArc arc2;
-	aArc arc3;
 };
