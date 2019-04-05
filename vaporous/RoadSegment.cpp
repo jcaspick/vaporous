@@ -1,9 +1,12 @@
 #include "RoadSegment.h"
 
-RoadSegment::RoadSegment(float angle, float radius, Orientation orientation) :
+RoadSegment::RoadSegment(float angle, float radius, 
+	Orientation orientation, float distanceOffset, HeightMap* heightMap) :
 	angle(angle),
 	radius(radius),
-	orientation(orientation)
+	orientation(orientation),
+	_distanceOffset(distanceOffset),
+	_heightMap(heightMap)
 {}
 
 float RoadSegment::arcLength() {
@@ -11,18 +14,21 @@ float RoadSegment::arcLength() {
 }
 
 vec3 RoadSegment::pointAtDistance(float distance) {
+	float height = _heightMap->sample(distance + _distanceOffset);
 	if (orientation == Orientation::Right) {
 		float normalizedDistance = glm::clamp(distance / arcLength(), 0.0f, 1.0f);
 		float rad = glm::radians(angle * normalizedDistance);
-		vec3 localPoint = vec3(cos(rad), 0, sin(rad)) * radius
+		vec3 localPoint = vec3(cos(rad), 0.0f, sin(rad)) * radius
 			- vec3(radius, 0, 0);
+		localPoint.y = height;
 		return (_rotation * localPoint) + _position;
 	}
 	else {
 		float normalizedDistance = glm::clamp(distance / arcLength(), 0.0f, 1.0f);
 		float rad = glm::radians(-angle * normalizedDistance + 180);
-		vec3 localPoint = vec3(cos(rad), 0, sin(rad)) * radius
+		vec3 localPoint = vec3(cos(rad), 0.0f, sin(rad)) * radius
 			+ vec3(radius, 0, 0);
+		localPoint.y = height;
 		return (_rotation * localPoint) + _position;
 	}
 }
@@ -30,13 +36,13 @@ vec3 RoadSegment::pointAtDistance(float distance) {
 vec3 RoadSegment::endPoint() {
 	if (orientation == Orientation::Right) {
 		float rad = glm::radians(angle);
-		vec3 localPoint = vec3(cos(rad), 0, sin(rad)) * radius
+		vec3 localPoint = vec3(cos(rad), 0.0f, sin(rad)) * radius
 			- vec3(radius, 0, 0);
 		return (_rotation * localPoint) + _position;
 	}
 	else {
 		float rad = glm::radians(-angle + 180);
-		vec3 localPoint = vec3(cos(rad), 0, sin(rad)) * radius
+		vec3 localPoint = vec3(cos(rad), 0.0f, sin(rad)) * radius
 			+ vec3(radius, 0, 0);
 		return (_rotation * localPoint) + _position;
 	}

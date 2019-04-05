@@ -1,5 +1,6 @@
 #pragma once
 #include "Transformable.h"
+#include "HeightMap.h"
 
 enum class Orientation {
 	Right,
@@ -8,7 +9,8 @@ enum class Orientation {
 
 class RoadSegment : public Transformable {
 public:
-	RoadSegment(float angle, float radius, Orientation orientation);
+	RoadSegment(float angle, float radius, Orientation orientation,
+		float distanceOffset, HeightMap* heightMap);
 	float arcLength();
 	vec3 endPoint();
 	quat endRot();
@@ -17,4 +19,8 @@ public:
 	float angle;
 	float radius;
 	Orientation orientation;
+
+private:
+	HeightMap* _heightMap;
+	float _distanceOffset;
 };

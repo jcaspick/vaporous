@@ -115,7 +115,7 @@ void Demo::draw() {
 	_renderer.drawPoint(vec3(0, 0, 1), vec4(0, 0, 1, 1), 0.1f);
 
 	_road.debugDraw(0.5f);
-	_road.draw();
+	//_road.draw();
 
 	_window->endDraw();
 }

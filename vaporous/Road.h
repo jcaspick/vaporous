@@ -1,6 +1,7 @@
 #pragma once
 #include "RoadSegment.h"
 #include "Context.h"
+#include "HeightMap.h"
 #include <vector>
 
 class Road {
@@ -24,6 +25,8 @@ private:
 	std::vector<RoadSegment> _road;
 	float _length;
 	float _width = 1.0f;
+
+	HeightMap _heightMap;
 
 	std::vector<GLuint> _vao;
 	std::vector<GLuint> _vbo;

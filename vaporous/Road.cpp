@@ -5,7 +5,14 @@
 Road::Road(Context* context) :
 	_context(context),
 	_length(0)
-{}
+{
+	// test heightmap
+	while (_heightMap.getLength() < 100.0f) {
+		float height = -3.0f + static_cast<float>(rand()) /
+			static_cast<float>(RAND_MAX / 6.0f);
+		_heightMap.addPoint(height, 10.0f);
+	}
+}
 
 void Road::debugDraw(float distanceBetweenPoints) {
 	if (_road.size() == 0) {
@@ -79,7 +86,7 @@ void Road::buildMeshes() {
 }
 
 void Road::addSegment(float angle, float radius, Orientation orientation) {
-	RoadSegment segment(angle, radius, orientation);
+	RoadSegment segment(angle, radius, orientation, _length, &_heightMap);
 
 	if (_road.size() > 0) {
 		segment.setPosition(_road.back().endPoint());

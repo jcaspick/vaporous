@@ -127,6 +127,7 @@
     <ClCompile Include="FreeCamera.cpp" />
     <ClCompile Include="GL.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="HeightMap.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OrbitCamera.cpp" />
@@ -149,6 +150,7 @@
     <ClInclude Include="EventManager.h" />
     <ClInclude Include="FreeCamera.h" />
     <ClInclude Include="GL.h" />
+    <ClInclude Include="HeightMap.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="MeshData.h" />
     <ClInclude Include="MeshUtilities.h" />
@@ -163,6 +165,7 @@
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Transformable.h" />
+    <ClInclude Include="Utilities.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>

@@ -78,6 +78,9 @@
     <ClCompile Include="Renderer.cpp">
       <Filter>Demo</Filter>
     </ClCompile>
+    <ClCompile Include="HeightMap.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h">
@@ -150,6 +153,12 @@
       <Filter>Demo</Filter>
     </ClInclude>
     <ClInclude Include="BiarcUtility.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="HeightMap.h">
       <Filter>Demo</Filter>
     </ClInclude>
   </ItemGroup>
