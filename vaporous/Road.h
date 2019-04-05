@@ -11,6 +11,7 @@ public:
 	void buildMeshes();
 
 	void addSegment(float angle, float radius, Orientation orientation);
+	void closeLoop();
 	void removeLastSegment();
 	void clear();
 

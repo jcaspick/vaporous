@@ -1,4 +1,5 @@
 #include "Road.h"
+#include "BiarcUtility.h"
 
 Road::Road(Context* context) :
 	_context(context),
@@ -40,6 +41,22 @@ void Road::addSegment(float angle, float radius, Orientation orientation) {
 
 	_road.push_back(segment);
 	_length += segment.arcLength();
+}
+
+void Road::closeLoop() {
+	if (_road.size() == 0) return;
+
+	Biarc biarc = BiarcUtil::biarc(
+		_road.back().endPoint(),
+		_road.back().endRot() * vec3(0, 0, 1),
+		vec3(0),
+		vec3(0, 0, 1)
+	);
+
+	addSegment(biarc.arc1_angle, biarc.arc1_radius, 
+		biarc.arc1_flipped ? Orientation::Left : Orientation::Right);
+	addSegment(biarc.arc2_angle, biarc.arc2_radius,
+		biarc.arc2_flipped ? Orientation::Left : Orientation::Right);
 }
 
 void Road::removeLastSegment() {

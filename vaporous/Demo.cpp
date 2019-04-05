@@ -130,6 +130,9 @@ void Demo::handleEvent(EventType type, EventData data) {
 		if (data.intData == GLFW_KEY_D) {
 			_road.clear();
 		}
+		if (data.intData == GLFW_KEY_L) {
+			_road.closeLoop();
+		}
 		break;
 	}
 }

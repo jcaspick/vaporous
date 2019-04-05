@@ -149,6 +149,9 @@
     <ClInclude Include="Renderer.h">
       <Filter>Demo</Filter>
     </ClInclude>
+    <ClInclude Include="BiarcUtility.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\basic_textured.frag">
