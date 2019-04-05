@@ -53,7 +53,6 @@ void Renderer::drawLine(vec3 a, vec3 b, vec4 color) {
 	_context->gl->setLineMode(true);
 
 	mat4 model = mat4(1);
-	//model = glm::translate(model, a);
 	model = model * glm::inverse(glm::lookAt(a, b, vec3(0, 1, 0)));
 	model = glm::scale(model, vec3(glm::length(a - b)));
 
@@ -63,6 +62,24 @@ void Renderer::drawLine(vec3 a, vec3 b, vec4 color) {
 	_debugShader->setVec4("color", color);
 
 	glDrawArrays(GL_LINES, 0, 6);
+}
+
+void Renderer::drawMesh(GLuint vao, GLuint numIndices, mat4 tform, Shader* shader) {
+	if (!_activeCamera) {
+		std::cout << "can't render, no camera set" << std::endl;
+		return;
+	}
+
+	_context->gl->useShader(shader->id);
+	_context->gl->bindVAO(vao);
+	_context->gl->setLineMode(false);
+
+	shader->setMat4("model", tform);
+	shader->setMat4("view", _activeCamera->getViewMatrix());
+	shader->setMat4("projection", _activeCamera->getProjectionMatrix());
+	shader->setInt("mainTex", 0);
+
+	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
 }
 
 void Renderer::createPointBuffer() {

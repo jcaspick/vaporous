@@ -79,6 +79,9 @@ void Demo::init() {
 		"resources/gradients.png", false);
 	_resourceMgr.bindTexture(Textures::YungFrink);
 
+	_resourceMgr.loadShader(Shaders::BasicTextured,
+		"shaders/basic.vert", "shaders/basic_textured.frag");
+
 	// create camera
 	_cam = p_Camera(new OrbitCamera(&_context));
 
@@ -112,6 +115,7 @@ void Demo::draw() {
 	_renderer.drawPoint(vec3(0, 0, 1), vec4(0, 0, 1, 1), 0.1f);
 
 	_road.debugDraw(0.5f);
+	_road.draw();
 
 	_window->endDraw();
 }
@@ -132,6 +136,9 @@ void Demo::handleEvent(EventType type, EventData data) {
 		}
 		if (data.intData == GLFW_KEY_L) {
 			_road.closeLoop();
+		}
+		if (data.intData == GLFW_KEY_B) {
+			_road.buildMeshes();
 		}
 		break;
 	}

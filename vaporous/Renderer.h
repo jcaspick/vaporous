@@ -17,6 +17,7 @@ public:
 	void setCamera(Camera* camera);
 	void drawPoint(vec3 point, vec4 color, float size = 0.1f);
 	void drawLine(vec3 a, vec3 b, vec4 color);
+	void drawMesh(GLuint vao, GLuint numIndices, mat4 tform, Shader* shader);
 
 private:
 	void createPointBuffer();

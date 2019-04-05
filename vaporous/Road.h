@@ -23,4 +23,10 @@ private:
 
 	std::vector<RoadSegment> _road;
 	float _length;
+	float _width = 1.0f;
+
+	std::vector<GLuint> _vao;
+	std::vector<GLuint> _vbo;
+	std::vector<GLuint> _ebo;
+	std::vector<GLuint> _numIndices;
 };
