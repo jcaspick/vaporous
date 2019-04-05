@@ -1,10 +1,11 @@
 #pragma once
 #include "RoadSegment.h"
+#include "Context.h"
 #include <vector>
 
 class Road {
 public:
-	Road();
+	Road(Context* context);
 	void debugDraw(float distanceBetweenPoints);
 	void draw();
 	void buildMeshes();
@@ -17,6 +18,8 @@ public:
 	vec3 pointAtDistance(float distance);
 
 private:
+	Context* _context;
+
 	std::vector<RoadSegment> _road;
 	float _length;
 };

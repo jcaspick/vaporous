@@ -7,7 +7,8 @@
 Demo::Demo() :
 	_lastFrame(0),
 	_resourceMgr(&_context),
-	_renderer(&_context)
+	_renderer(&_context),
+	_road(&_context)
 {
 	// initialize GLFW
 	glfwInit();
@@ -34,6 +35,7 @@ Demo::Demo() :
 	_context.inputMgr = _window->getInputMgr();
 	_context.eventMgr = _window->getEventMgr();
 	_context.resourceMgr = &_resourceMgr;
+	_context.renderer = &_renderer;
 
 	// subscribe to events
 	_context.eventMgr->subscribe(EventType::KeyDown, this);
@@ -104,10 +106,12 @@ void Demo::update(float dt) {
 void Demo::draw() {
 	_window->beginDraw();
 
-	_renderer.drawPoint(vec3(0), vec4(1, 1, 1, 1), 1);
+	_renderer.drawPoint(vec3(0), vec4(1, 1, 1, 0.2f), 1);
 	_renderer.drawPoint(vec3(1, 0, 0), vec4(1, 0, 0, 1), 0.1f);
 	_renderer.drawPoint(vec3(0, 1, 0), vec4(0, 1, 0, 1), 0.1f);
 	_renderer.drawPoint(vec3(0, 0, 1), vec4(0, 0, 1, 1), 0.1f);
+
+	_road.debugDraw(0.5f);
 
 	_window->endDraw();
 }
@@ -117,6 +121,15 @@ void Demo::handleEvent(EventType type, EventData data) {
 	case EventType::KeyDown:
 		if (data.intData == GLFW_KEY_ESCAPE)
 			_window->close();
+		if (data.intData == GLFW_KEY_A) {
+			_road.addSegment(30, 5, Orientation::Left);
+		}
+		if (data.intData == GLFW_KEY_S) {
+			_road.addSegment(30, 5, Orientation::Right);
+		}
+		if (data.intData == GLFW_KEY_D) {
+			_road.clear();
+		}
 		break;
 	}
 }

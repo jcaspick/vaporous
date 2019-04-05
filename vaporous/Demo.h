@@ -3,9 +3,7 @@
 #include "GL.h"
 #include "OrbitCamera.h"
 #include "Observer.h"
-#include "MeshUtilities.h"
-#include "Arc.h"
-#include "Renderer.h"
+#include "Road.h"
 
 #include <memory>
 
@@ -30,6 +28,8 @@ private:
 	ResourceManager _resourceMgr;
 	Renderer _renderer;
 	p_Camera _cam;
+
+	Road _road;
 
 	float _lastFrame;
 };
