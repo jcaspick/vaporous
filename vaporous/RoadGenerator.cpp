@@ -117,6 +117,7 @@ void RoadGenerator::step() {
 		// if the goal length has been reached, complete the track
 		if (_road.length() > _goalLength && iteration.isValid) {
 			_road.closeLoop();
+			_road._heightMap.setLoopDistance(_road.length());
 			_generating = false;
 			return;
 		}

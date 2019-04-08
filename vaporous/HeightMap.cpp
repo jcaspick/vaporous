@@ -31,7 +31,16 @@ float HeightMap::sample(float distance) {
 
 			float t = (distance - _heightMap[i].distance) /
 				(_heightMap[i + 1].distance - _heightMap[i].distance);
-			return CRSpline::interpolate(t, p0, p1, p2, p3);
+			float interpolated = CRSpline::interpolate(t, p0, p1, p2, p3);
+			
+			if (distance > _loopDistance - _loopSmoothing) {
+				float t = (distance - (_loopDistance - _loopSmoothing)) /
+					_loopSmoothing;
+				return Util::lerp(interpolated, 0.0f, Util::easeInOutCubic(t));
+			}
+			else {
+				return interpolated;
+			}
 		}
 	}
 }
@@ -45,8 +54,13 @@ void HeightMap::addPoint(float height, float interval) {
 	_heightMap.emplace_back(_length, height);
 }
 
+void HeightMap::setLoopDistance(float loopDistance) {
+	_loopDistance = loopDistance;
+}
+
 void HeightMap::clear() {
 	_heightMap.clear();
 	_heightMap.emplace_back(0.0f, 0.0f);
+	_loopDistance = FLT_MAX;
 	_length = 0;
 }

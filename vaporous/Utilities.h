@@ -28,4 +28,22 @@ namespace Util {
 	inline vec3 flatten(vec3 v) {
 		return vec3(v.x, 0, v.z);
 	}
+
+	inline float lerp(float a, float b, float t)
+	{
+		return (a * (1.0 - t)) + (b * t);
+	}
+
+	inline float easeInCubic(float t) {
+		return t * t * t;
+	}
+
+	inline float easeOutCubic(float t) {
+		return (--t) * t * t + 1;
+	}
+
+	inline float easeInOutCubic(float t) {
+		return t < 0.5f ? 4 * t * t * t : (t - 1) * 
+			(2 * t - 2) * (2 * t - 2) + 1;
+	}
 }
