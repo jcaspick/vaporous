@@ -17,6 +17,7 @@ void Renderer::init() {
 	// create buffers for debug drawing
 	createPointBuffer();
 	createLineBuffer();
+	createCircleBuffer();
 }
 
 void Renderer::setCamera(Camera* camera) {
@@ -64,6 +65,25 @@ void Renderer::drawLine(vec3 a, vec3 b, vec4 color) {
 	_debugShader->setVec4("color", color);
 
 	glDrawArrays(GL_LINES, 0, 6);
+}
+
+void Renderer::drawCircle(vec3 center, float radius, vec4 color) {
+	if (!_activeCamera) {
+		std::cout << "can't render, no camera set" << std::endl;
+		return;
+	}
+
+	_context->gl->useShader(_debugShader->id);
+	_context->gl->bindVAO(_circleVao);
+	_context->gl->setLineMode(true);
+
+	mat4 model = glm::scale(glm::translate(mat4(1), center), vec3(radius));
+	_debugShader->setMat4("model", model);
+	_debugShader->setMat4("view", _activeCamera->getViewMatrix());
+	_debugShader->setMat4("projection", _activeCamera->getProjectionMatrix());
+	_debugShader->setVec4("color", color);
+
+	glDrawArrays(GL_LINE_LOOP, 0, _circleResolution);
 }
 
 void Renderer::drawMesh(GLuint vao, GLuint numIndices, mat4 tform, Shader* shader) {
@@ -120,6 +140,28 @@ void Renderer::createLineBuffer() {
 	glBindBuffer(GL_ARRAY_BUFFER, _lineVbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices),
 		vertices, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
+		3 * sizeof(float), (void*)0);
+}
+
+void Renderer::createCircleBuffer() {
+	std::vector<float> vertices;
+	float angleStep = 360.0f / static_cast<float>(_circleResolution);
+	for (float a = 0.0f; a < 360.0f ; a += angleStep) {
+		vertices.emplace_back(cos(glm::radians(a))); // x
+		vertices.emplace_back(0);					 // y
+		vertices.emplace_back(sin(glm::radians(a))); // z
+	}
+
+	glGenVertexArrays(1, &_circleVao);
+	glGenBuffers(1, &_circleVbo);
+
+	glBindVertexArray(_circleVao);
+	glBindBuffer(GL_ARRAY_BUFFER, _circleVbo);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float),
+		&vertices[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,

@@ -17,11 +17,13 @@ public:
 	void setCamera(Camera* camera);
 	void drawPoint(vec3 point, vec4 color, float size = 1.0f);
 	void drawLine(vec3 a, vec3 b, vec4 color);
+	void drawCircle(vec3 center, float radius, vec4 color);
 	void drawMesh(GLuint vao, GLuint numIndices, mat4 tform, Shader* shader);
 
 private:
 	void createPointBuffer();
 	void createLineBuffer();
+	void createCircleBuffer();
 
 	Context* _context;
 
@@ -30,4 +32,7 @@ private:
 
 	GLuint _pointVbo, _pointVao;
 	GLuint _lineVbo, _lineVao;
+	GLuint _circleVbo, _circleVao;
+
+	int _circleResolution = 64;
 };
