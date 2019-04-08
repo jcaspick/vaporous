@@ -13,8 +13,9 @@ public:
 
 private:
 	struct Iteration {
-		Iteration() : attempts(0) {}
+		Iteration() : attempts(0), isValid(true) {}
 		int attempts;
+		bool isValid;
 	};
 
 private:
@@ -27,7 +28,10 @@ private:
 
 	bool _generating = false;
 	float _elapsed = 0.0f;
-	float _stepInterval = 0.25f;
+	float _stepInterval = 0.00f;
 
-	float _goalLength = 500.0f;
+	float _goalLength = 1000.0f;
+	float _worldRadius = 150.0f;
+	float _deadZoneRadius = 30.0f;
+	int _maxAttemptsPerIter = 3;
 };
