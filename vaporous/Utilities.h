@@ -1,4 +1,7 @@
 #pragma once
+#include <glm/glm.hpp>
+
+using vec3 = glm::vec3;
 
 namespace CRSpline {
 	inline float interpolate(float t, float p0, 
@@ -20,5 +23,9 @@ namespace Util {
 
 	inline bool randomBool() {
 		return rand() % 2;
+	}
+
+	inline vec3 flatten(vec3 v) {
+		return vec3(v.x, 0, v.z);
 	}
 }

@@ -18,8 +18,17 @@ private:
 		bool isValid;
 	};
 
+	struct Sample {
+		Sample(float distance, vec3 point) :
+			distance(distance), point(point) {}
+
+		float distance;
+		vec3 point;
+	};
+
 private:
 	void step();
+	void updateSamples();
 
 	Context* _context;
 
@@ -34,4 +43,9 @@ private:
 	float _worldRadius = 150.0f;
 	float _deadZoneRadius = 30.0f;
 	int _maxAttemptsPerIter = 3;
+
+	std::vector<Sample> _samples;
+	float _sampleInterval = 4.0f;
+	float _furthestSample = 0;
+	float _minClearance = 3.0f;
 };

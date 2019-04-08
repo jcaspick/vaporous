@@ -23,10 +23,7 @@ void RoadGenerator::draw() {
 }
 
 void RoadGenerator::start() {
-	if (_generating) {
-		return;
-	}
-
+	if (_generating) return;
 	reset();
 
 	// initialize heightmap
@@ -34,6 +31,10 @@ void RoadGenerator::start() {
 
 	// add straight section as starting piece
 	_road.addSegment(2, 1000, Orientation::Left);
+	for (float d = 0.0f; d < _road.length(); d += _sampleInterval) {
+		_samples.emplace_back(Sample(d, _road.pointAtDistance(d)));
+		_furthestSample = d;
+	}
 
 	// push the first task to the stack
 	_stack.emplace_back(Iteration());
@@ -46,6 +47,7 @@ void RoadGenerator::start() {
 void RoadGenerator::reset() {
 	_road.clear();
 	_road.clearHeightmap();
+	_samples.clear();
 	_generating = false;
 }
 
@@ -55,6 +57,7 @@ void RoadGenerator::step() {
 	// if the current road segment is invalid, remove it
 	if (!iteration.isValid) {
 		_road.removeLastSegment();
+		updateSamples();
 		iteration.isValid = true;
 		return;
 	}
@@ -62,6 +65,7 @@ void RoadGenerator::step() {
 	// return to the previous iteration
 	else if (iteration.attempts >= _maxAttemptsPerIter) {
 		_road.removeLastSegment();
+		updateSamples();
 		_stack.pop_back();
 		return;
 	}
@@ -69,7 +73,7 @@ void RoadGenerator::step() {
 	// create a new road segment
 	float radius = Util::randomRange(20.0f, 40.0f);
 	float angle = Util::randomRange(30.0f, 100.0f);
-	Orientation orientation = Util::randomBool() ? 
+	Orientation orientation = Util::randomBool() ?
 		Orientation::Right : Orientation::Left;
 	_road.addSegment(angle, radius, orientation);
 	RoadSegment segment = _road._road.back();
@@ -79,7 +83,24 @@ void RoadGenerator::step() {
 		iteration.isValid = false;
 	}
 	// if the segment intersects a previous segment it is invalid
-	// TODO
+	for (float d = _furthestSample + _sampleInterval; d < _road.length(); 
+		d += _sampleInterval) 
+	{
+		for (auto itr = _samples.rbegin(); itr != _samples.rend(); ++itr) {
+			vec3 a = _road.pointAtDistance(d);
+			vec3 b = itr->point;
+
+			if (glm::length2(Util::flatten(a) - Util::flatten(b)) < 
+				_sampleInterval * _sampleInterval - 0.1f) 
+			{
+				if (abs(a.y - b.y) < _minClearance) {
+					iteration.isValid = false;
+					d += _road.length(); // breaks outer for loop
+					break;
+				}
+			}
+		}
+	}
 
 	// if the goal length has been reached and the new segment does not
 	// lead back towards the origin it is invalid
@@ -110,5 +131,21 @@ void RoadGenerator::step() {
 	// if current iteration is a valid move, begin the next
 	if (iteration.isValid) {
 		_stack.emplace_back(Iteration());
+		updateSamples();
+	}
+}
+
+void RoadGenerator::updateSamples() {
+	if (_furthestSample > _road.length()) {
+		while (_furthestSample > _road.length()) {
+			_samples.pop_back();
+			_furthestSample = _samples.back().distance;
+		}
+	}
+	else {
+		for (float d = _furthestSample; d < _road.length(); d += _sampleInterval) {
+			_samples.emplace_back(d, _road.pointAtDistance(d));
+			_furthestSample = d;
+		}
 	}
 }
