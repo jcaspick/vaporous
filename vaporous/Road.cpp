@@ -5,14 +5,7 @@
 Road::Road(Context* context) :
 	_context(context),
 	_length(0)
-{
-	// test heightmap
-	while (_heightMap.getLength() < 100.0f) {
-		float height = -3.0f + static_cast<float>(rand()) /
-			static_cast<float>(RAND_MAX / 6.0f);
-		_heightMap.addPoint(height, 10.0f);
-	}
-}
+{}
 
 void Road::debugDraw(float distanceBetweenPoints) {
 	if (_road.size() == 0) {
@@ -141,6 +134,20 @@ void Road::clear() {
 	_numIndices.clear();
 }
 
+void Road::initializeHeightmap(float distance, float interval,
+	float range)
+{
+	while (_heightMap.getLength() < distance) {
+		float height = (-range * 0.5f) + static_cast<float>(rand()) /
+			static_cast<float>(RAND_MAX / range);
+		_heightMap.addPoint(height, interval);
+	}
+}
+
+void Road::clearHeightmap() {
+	_heightMap.clear();
+}
+
 float Road::length() {
 	return _length;
 }
@@ -155,4 +162,6 @@ vec3 Road::pointAtDistance(float distance) {
 		}
 		sum += segment.arcLength();
 	}
+
+	return _road.back().pointAtDistance(_road.back().arcLength());
 }

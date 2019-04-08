@@ -15,7 +15,7 @@ public:
 	Renderer(Context* context);
 	void init();
 	void setCamera(Camera* camera);
-	void drawPoint(vec3 point, vec4 color, float size = 0.1f);
+	void drawPoint(vec3 point, vec4 color, float size = 1.0f);
 	void drawLine(vec3 a, vec3 b, vec4 color);
 	void drawMesh(GLuint vao, GLuint numIndices, mat4 tform, Shader* shader);
 

@@ -11,3 +11,14 @@ namespace CRSpline {
 		return a + (b * t) + (c * t * t) + (d * t * t * t);
 	}
 }
+
+namespace Util {
+	inline float randomRange(float min, float max) {
+		return min + static_cast<float>(rand()) /
+			static_cast<float>(RAND_MAX / (max - min));
+	}
+
+	inline bool randomBool() {
+		return rand() % 2;
+	}
+}

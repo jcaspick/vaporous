@@ -5,6 +5,8 @@
 #include <vector>
 
 class Road {
+	friend class RoadGenerator;
+
 public:
 	Road(Context* context);
 	void debugDraw(float distanceBetweenPoints);
@@ -15,6 +17,10 @@ public:
 	void closeLoop();
 	void removeLastSegment();
 	void clear();
+
+	void initializeHeightmap(float distance, float interval, 
+		float range);
+	void clearHeightmap();
 
 	float length();
 	vec3 pointAtDistance(float distance);

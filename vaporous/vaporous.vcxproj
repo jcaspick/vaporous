@@ -134,6 +134,7 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Road.cpp" />
+    <ClCompile Include="RoadGenerator.cpp" />
     <ClCompile Include="RoadSegment.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="ResourceIdentifiers.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Road.h" />
+    <ClInclude Include="RoadGenerator.h" />
     <ClInclude Include="RoadSegment.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="stb_image.h" />

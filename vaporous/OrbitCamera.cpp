@@ -26,7 +26,7 @@ mat4 OrbitCamera::getViewMatrix() {
 mat4 OrbitCamera::getProjectionMatrix() {
 	vec2 window = _context->window->getSize();
 	mat4 projection = glm::perspective(45.0f, window.x / window.y,
-		0.1f, 100.0f);
+		0.1f, 1000.0f);
 	return projection;
 }
 
@@ -42,7 +42,7 @@ void OrbitCamera::handleInput() {
 		vec2 mousePos = _context->inputMgr->getMousePos();
 		vec2 offset = static_cast<vec2>(mousePos - _mouseAnchor);
 
-		_zoom = std::fmax(1.0f, _lastZoom - offset.y * 0.05f);
+		_zoom = std::fmax(1.0f, _lastZoom - offset.y * 0.5f);
 	}
 }
 

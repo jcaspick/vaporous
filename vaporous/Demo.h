@@ -3,7 +3,7 @@
 #include "GL.h"
 #include "OrbitCamera.h"
 #include "Observer.h"
-#include "Road.h"
+#include "RoadGenerator.h"
 
 #include <memory>
 
@@ -29,7 +29,7 @@ private:
 	Renderer _renderer;
 	p_Camera _cam;
 
-	Road _road;
+	RoadGenerator _roadGenerator;
 
 	float _lastFrame;
 };

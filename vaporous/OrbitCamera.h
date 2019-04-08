@@ -21,7 +21,7 @@ private:
 	vec3 _position = vec3(0);
 	float _azimuth = 45;
 	float _altitude = 35.264f;
-	float _zoom = 10;
+	float _zoom = 40;
 
 	vec2 _mouseAnchor;
 	vec2 _lastOrientation;
