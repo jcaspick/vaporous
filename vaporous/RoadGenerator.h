@@ -41,6 +41,7 @@ private:
 private:
 	void step();
 	void updateSamples();
+	bool evaluateLoop();
 	SegmentType chooseSegmentType();
 	void getSegmentProperties(SegmentType type, 
 		float& angle, float& radius);

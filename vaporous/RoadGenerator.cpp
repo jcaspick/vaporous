@@ -20,6 +20,8 @@ void RoadGenerator::draw() {
 	_road.debugDraw(2.0f);
 	_context->renderer->drawCircle(vec3(0), _worldRadius, 
 		vec4(0, 1, 0, 1));
+	_context->renderer->drawCircle(vec3(0), _deadZoneRadius,
+		vec4(0, 1, 1, 1));
 }
 
 void RoadGenerator::start() {
@@ -127,7 +129,18 @@ void RoadGenerator::step() {
 		if (_road.length() > _goalLength && iteration.isValid) {
 			_road.closeLoop();
 			_road._heightMap.setLoopDistance(_road.length());
-			_generating = false;
+			// the biarc solver somtimes comes up with ugly solutions
+			// when closing the loop so we check to see if the solution
+			// is acceptable before declaring the road complete
+			if (evaluateLoop()) {
+				_generating = false;
+			}
+			else {
+				_road.removeLastSegment();
+				_road.removeLastSegment();
+				_road._heightMap.setLoopDistance(FLT_MAX);
+				iteration.isValid = false;
+			}
 			return;
 		}
 		// if not the segment is invalid
@@ -158,6 +171,18 @@ void RoadGenerator::updateSamples() {
 			_furthestSample = d;
 		}
 	}
+}
+
+bool RoadGenerator::evaluateLoop() {
+	RoadSegment a = _road._road.at(_road._road.size() - 2);
+	RoadSegment b = _road._road.at(_road._road.size() - 1);
+
+	// curves shouldn't be sharper than the sharp road segments
+	// or wider than the shallow road segments
+	if (a.radius > 10.0f && a.radius < 90.0f && 
+		b.radius > 10.0f && b.radius < 90.0f) return true;
+
+	return false;
 }
 
 SegmentType RoadGenerator::chooseSegmentType() {
