@@ -79,8 +79,9 @@ void RoadGenerator::step() {
 	}
 
 	// create a new road segment
-	float radius = Util::randomRange(20.0f, 40.0f);
-	float angle = Util::randomRange(30.0f, 100.0f);
+	float radius, angle;
+	SegmentType type = chooseSegmentType();
+	getSegmentProperties(type, angle, radius);
 	Orientation orientation = Util::randomBool() ?
 		Orientation::Right : Orientation::Left;
 	_road.addSegment(angle, radius, orientation);
@@ -156,5 +157,38 @@ void RoadGenerator::updateSamples() {
 			_samples.emplace_back(d, _road.pointAtDistance(d));
 			_furthestSample = d;
 		}
+	}
+}
+
+SegmentType RoadGenerator::chooseSegmentType() {
+	float r = Util::randomRange(0.0f, 1.0f);
+	if (r < pStraight) return SegmentType::Straight;
+	else r -= pStraight;
+	if (r < pShallow) return SegmentType::ShallowCurve;
+	else r -= pShallow;
+	if (r < pModerate) return SegmentType::ModerateCurve;
+	else return SegmentType::SharpCurve;
+}
+
+void RoadGenerator::getSegmentProperties(SegmentType type, 
+	float& angle, float& radius) 
+{
+	switch (type) {
+	case SegmentType::Straight:
+		angle = Util::randomRange(4.0f, 12.0f);
+		radius = Util::randomRange(120.0f, 200.0f);
+		break;
+	case SegmentType::ShallowCurve:
+		angle = Util::randomRange(30.0f, 90.0f);
+		radius = Util::randomRange(40.0f, 90.0f);
+		break;
+	case SegmentType::ModerateCurve:
+		angle = Util::randomRange(30.0f, 100.0f);
+		radius = Util::randomRange(20.0f, 40.0f);
+		break;
+	case SegmentType::SharpCurve:
+		angle = Util::randomRange(90.0f, 120.0f);
+		radius = Util::randomRange(10.0f, 20.0f);
+		break;
 	}
 }

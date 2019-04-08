@@ -2,6 +2,13 @@
 #include "Road.h"
 #include "Context.h"
 
+enum class SegmentType {
+	Straight,
+	ShallowCurve,
+	ModerateCurve,
+	SharpCurve
+};
+
 class RoadGenerator {
 public:
 	RoadGenerator(Context* context);
@@ -10,6 +17,11 @@ public:
 	void draw();
 	void start();
 	void reset();
+
+	float pStraight = 0.1875f;
+	float pShallow = 0.1875f;
+	float pModerate = 0.5f;
+	float pSharp = 0.125f;
 
 private:
 	struct Iteration {
@@ -29,6 +41,9 @@ private:
 private:
 	void step();
 	void updateSamples();
+	SegmentType chooseSegmentType();
+	void getSegmentProperties(SegmentType type, 
+		float& angle, float& radius);
 
 	Context* _context;
 
@@ -39,10 +54,10 @@ private:
 	float _elapsed = 0.0f;
 	float _stepInterval = 0.00f;
 
-	float _goalLength = 1000.0f;
-	float _worldRadius = 150.0f;
+	float _goalLength = 400.0f;
+	float _worldRadius = 100.0f;
 	float _deadZoneRadius = 30.0f;
-	int _maxAttemptsPerIter = 3;
+	int _maxAttemptsPerIter = 4;
 
 	std::vector<Sample> _samples;
 	float _sampleInterval = 4.0f;
