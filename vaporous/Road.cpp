@@ -149,7 +149,8 @@ void Road::clearHeightmap() {
 }
 
 float Road::length() {
-	return _length;
+	if (_road.empty()) return 0.0f;
+	else return _length;
 }
 
 vec3 Road::pointAtDistance(float distance) {

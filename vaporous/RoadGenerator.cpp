@@ -45,13 +45,21 @@ void RoadGenerator::start() {
 }
 
 void RoadGenerator::reset() {
+	_stack.clear();
 	_road.clear();
 	_road.clearHeightmap();
 	_samples.clear();
+	_furthestSample = 0.0f;
 	_generating = false;
 }
 
 void RoadGenerator::step() {
+	if (_stack.empty()) {
+		std::cout << "road generation failed" << std::endl;
+		reset();
+		return;
+	}
+
 	Iteration &iteration = _stack.back();
 
 	// if the current road segment is invalid, remove it
