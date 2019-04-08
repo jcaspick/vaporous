@@ -53,7 +53,9 @@ void Renderer::drawLine(vec3 a, vec3 b, vec4 color) {
 	_context->gl->setLineMode(true);
 
 	mat4 model = mat4(1);
-	model = model * glm::inverse(glm::lookAt(a, b, vec3(0, 1, 0)));
+	vec3 up = vec3(0, 1, 0);
+	if (a.x == b.x && a.z == b.z) up = vec3(1, 0, 0);
+	model = model * glm::inverse(glm::lookAt(a, b, up));
 	model = glm::scale(model, vec3(glm::length(a - b)));
 
 	_debugShader->setMat4("model", model);

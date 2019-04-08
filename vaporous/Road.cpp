@@ -24,8 +24,11 @@ void Road::debugDraw(float distanceBetweenPoints) {
 	for (float d = distanceBetweenPoints; d < _length; 
 		d += distanceBetweenPoints) 
 	{
-		_context->renderer->drawPoint(pointAtDistance(d), 
-			vec4(1, 1, 1, 1));
+		vec3 p = pointAtDistance(d);
+		vec4 lineColor = p.y >= 0 ? vec4(0.75f, 1.0f, 0.75f, 1.0f) :
+			vec4(1.0f, 0.75f, 0.75f, 1.0f);
+		_context->renderer->drawPoint(p, vec4(1, 1, 1, 1));
+		_context->renderer->drawLine(vec3(p.x, 0, p.z), p, lineColor);
 	}
 	_context->renderer->drawPoint(pointAtDistance(_length), 
 		vec4(1, 0, 0, 1), 0.3f);
