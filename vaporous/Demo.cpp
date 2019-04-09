@@ -40,7 +40,7 @@ Demo::Demo() :
 
 	_roadCam.setScreenSize(_window->getSize());
 	_roadCam.setFOV(75.0f);
-	_car = MeshUtil::loadFromObj("resources/car.3d", 0.1f);
+	_car = MeshUtil::loadFromObj("resources/car.obj", 0.1f);
 	_car.bind();
 
 	// subscribe to events
@@ -126,7 +126,7 @@ void Demo::handleEvent(EventType type, EventData data) {
 		if (data.intData == GLFW_KEY_ESCAPE)
 			_window->close();
 		if (data.intData == GLFW_KEY_S) {
-			_roadGenerator.start();
+			_roadGenerator.generate();
 		}
 		if (data.intData == GLFW_KEY_D) {
 			_roadGenerator.reset();

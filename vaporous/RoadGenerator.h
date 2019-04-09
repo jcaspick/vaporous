@@ -14,6 +14,7 @@ public:
 	RoadGenerator(Context* context);
 	
 	void update(float dt);
+	void generate();
 	void draw();
 	void start();
 	void reset();
@@ -57,7 +58,7 @@ private:
 	float _stepInterval = 0.00f;
 
 	float _goalLength = 400.0f;
-	float _worldRadius = 100.0f;
+	float _worldRadius = 150.0f;
 	float _deadZoneRadius = 50.0f;
 	int _maxAttemptsPerIter = 4;
 
