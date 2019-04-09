@@ -6,12 +6,13 @@ using vec3 = glm::vec3;
 using vec2 = glm::vec2;
 
 struct Vertex {
-	Vertex() : position(vec3(0)), uv(vec2(0)) {};
-	Vertex(vec3 position, vec2 uv) :
-		position(position), uv(uv) {};
+	Vertex() : position(vec3(0)), uv(vec2(0)), normal(vec3(0)) {};
+	Vertex(vec3 position, vec2 uv, vec3 normal = vec3(0)) :
+		position(position), uv(uv), normal(normal) {};
 
 	vec3 position;
 	vec2 uv;
+	vec3 normal;
 };
 
 using Vertices = std::vector<Vertex>;

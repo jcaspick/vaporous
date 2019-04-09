@@ -25,7 +25,7 @@ void Texture::bind() const {
 bool Texture::loadFromFile(const std::string& path, bool alpha) {
 	int sourceWidth, sourceHeight, numChannels;
 	int mode = alpha ? STBI_rgb_alpha : STBI_rgb;
-	stbi_set_flip_vertically_on_load(0);
+	stbi_set_flip_vertically_on_load(1);
 	unsigned char* data = stbi_load(path.c_str(), &sourceWidth, 
 		&sourceHeight, &numChannels, mode);
 

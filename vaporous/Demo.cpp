@@ -1,4 +1,5 @@
 #include "Demo.h"
+#include "MeshUtilities.h"
 
 #include <glad\glad.h>
 #include <GLFW\glfw3.h>
@@ -39,6 +40,8 @@ Demo::Demo() :
 
 	_roadCam.setScreenSize(_window->getSize());
 	_roadCam.setFOV(75.0f);
+	_car = MeshUtil::loadFromObj("resources/car.3d", 0.1f);
+	_car.bind();
 
 	// subscribe to events
 	_context.eventMgr->subscribe(EventType::KeyDown, this);
@@ -52,6 +55,8 @@ Demo::~Demo() {
 void Demo::init() {
 	_resourceMgr.loadTexture(Textures::Rainbow,
 		"resources/gradients.png", false);
+	_resourceMgr.loadTexture(Textures::CarDiffuse,
+		"resources/car_diffuse.png", false);
 	_resourceMgr.bindTexture(Textures::Rainbow);
 
 	_resourceMgr.loadShader(Shaders::BasicTextured,
@@ -98,8 +103,12 @@ void Demo::draw() {
 	_renderer.drawPoint(vec3(0, 10, 0), vec4(0, 1, 0, 1));
 	_renderer.drawPoint(vec3(0, 0, 10), vec4(0, 0, 1, 1));
 
+	_resourceMgr.bindTexture(Textures::Rainbow);
 	if (!camAttached) _roadGenerator.draw();
 	_road.draw();
+
+	_resourceMgr.bindTexture(Textures::CarDiffuse);
+	_renderer.drawMesh(_car, mat4(1), &_resourceMgr.getShader(Shaders::BasicTextured));
 
 	_window->endDraw();
 }

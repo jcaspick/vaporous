@@ -35,6 +35,7 @@ private:
 
 	RoadGenerator _roadGenerator;
 	Road& _road;
+	Mesh _car;
 
 	float _lastFrame;
 

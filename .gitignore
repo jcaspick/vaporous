@@ -330,3 +330,6 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+
+# exception for car model which is a different type of .obj
+!car.obj
