@@ -17,12 +17,12 @@ namespace MeshUtil {
 			Vertex left;
 			left.position = vec3(cos(angle), 0, sin(angle)) 
 				* (radius + width * 0.5f) - vec3(radius, 0, 0);
-			left.uv = vec2(0, static_cast<float>(d) / divisions);
+			left.uv = vec2(0, distance);
 
 			Vertex right;
 			right.position = vec3(cos(angle), 0, sin(angle))
 				* (radius - width * 0.5f) - vec3(radius, 0, 0);
-			right.uv = vec2(1, static_cast<float>(d) / divisions);
+			right.uv = vec2(1, distance);
 
 			left.position.y = heightmap->sample(distance);
 			right.position.y = heightmap->sample(distance);
@@ -56,12 +56,12 @@ namespace MeshUtil {
 			Vertex left;
 			left.position = vec3(cos(angle), 0, sin(angle))
 				* (radius - width * 0.5f) + vec3(radius, 0, 0);
-			left.uv = vec2(0, static_cast<float>(d) / divisions);
+			left.uv = vec2(0, distance);
 
 			Vertex right;
 			right.position = vec3(cos(angle), 0, sin(angle))
 				* (radius + width * 0.5f) + vec3(radius, 0, 0);
-			right.uv = vec2(1, static_cast<float>(d) / divisions);
+			right.uv = vec2(1, distance);
 
 			left.position.y = heightmap->sample(distance);
 			right.position.y = heightmap->sample(distance);

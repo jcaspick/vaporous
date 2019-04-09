@@ -71,6 +71,14 @@ void Road::buildMesh() {
 		_mesh.indices.insert(_mesh.indices.end(), segment.indices.begin(),
 			segment.indices.end());
 	}
+
+	// scale UVs
+	float textureScale = 12.0f;
+	textureScale += fmod(_length, textureScale) / floor(_length / textureScale);
+	for (auto& vertex : _mesh.vertices) {
+		vertex.uv.y /= textureScale;
+	}
+
 	_mesh.bind();
 }
 

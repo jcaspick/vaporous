@@ -47,11 +47,9 @@ Demo::~Demo() {
 }
 
 void Demo::init() {
-	_resourceMgr.loadTexture(Textures::YungFrink, 
-		"resources/yungFrink.png", false);
 	_resourceMgr.loadTexture(Textures::Rainbow,
 		"resources/gradients.png", false);
-	_resourceMgr.bindTexture(Textures::YungFrink);
+	_resourceMgr.bindTexture(Textures::Rainbow);
 
 	_resourceMgr.loadShader(Shaders::BasicTextured,
 		"shaders/basic.vert", "shaders/basic_textured.frag");
