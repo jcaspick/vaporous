@@ -15,6 +15,7 @@ public:
 	vec3 endPoint();
 	quat endRot();
 	vec3 pointAtDistance(float distance);
+	float distanceOffset();
 
 	float angle;
 	float radius;

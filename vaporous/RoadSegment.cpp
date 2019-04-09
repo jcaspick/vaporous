@@ -56,3 +56,7 @@ quat RoadSegment::endRot() {
 		return _rotation * glm::angleAxis(glm::radians(angle), vec3(0, 1, 0));
 	}
 }
+
+float RoadSegment::distanceOffset() {
+	return _distanceOffset;
+}

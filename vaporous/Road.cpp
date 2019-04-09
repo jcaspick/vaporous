@@ -28,14 +28,6 @@ void Road::debugDraw(float distanceBetweenPoints) {
 }
 
 void Road::draw() {
-	//if (_vao.size() == 0) return;
-
-	//for (int i = 0; i < _road.size(); i++) {
-	//	_context->renderer->drawMesh(_vao[i], _numIndices[i],
-	//		_road.at(i).getModelMatrix(), 
-	//		&_context->resourceMgr->getShader(Shaders::BasicTextured));
-	//}
-
 	if (_mesh.vertices.size() == 0) return;
 
 	_context->renderer->drawMesh(_mesh, mat4(1),
@@ -45,7 +37,7 @@ void Road::draw() {
 void Road::buildMesh() {
 	if (_road.size() == 0) return;
 
-	_mesh = MeshUtil::segmentMesh(_road.at(0), _width, 1.0f);
+	_mesh = MeshUtil::segmentMesh(_road.at(0), _width, 1.0f, &_heightMap);
 	//for (int i = 1; i < _road.size(); ++i) {
 	//	Mesh segment = MeshUtil::segmentMesh(_road.at(i), _width, 1.0f);
 	//	_mesh = MeshUtil::concat(_mesh, segment);
