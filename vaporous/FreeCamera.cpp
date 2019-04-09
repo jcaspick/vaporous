@@ -1,17 +1,15 @@
 #include "FreeCamera.h"
+#include "Utilities.h"
 
-FreeCamera::FreeCamera(float& screenWidth, float& screenHeight) :
+FreeCamera::FreeCamera() :
 	_position(0, 0, 0),
 	_forward(0, 0, 1),
+	_right(1, 0, 0),
 	_up(0, 1, 0),
 	_worldUp(0, 1, 0),
-	_yaw(0),
-	_pitch(0),
-	_speed(2.5f),
-	_sensitivity(0.1f),
 	_fov(45.0f),
-	_screenWidth(screenWidth),
-	_screenHeight(screenHeight)
+	_screenWidth(1280),
+	_screenHeight(720)
 {
 	calculateVectors();
 }
@@ -21,16 +19,30 @@ mat4 FreeCamera::getViewMatrix() {
 }
 
 mat4 FreeCamera::getProjectionMatrix() {
-	return glm::perspective(_fov, _screenWidth / _screenHeight, 0.1f, 1000.0f);
+	return glm::perspective(glm::radians(_fov), 
+		_screenWidth / _screenHeight, 0.1f, 1000.0f);
+}
+
+void FreeCamera::setScreenSize(vec2 screen) {
+	_screenWidth = screen.x;
+	_screenHeight = screen.y;
+}
+
+void FreeCamera::setPosition(vec3 pos) {
+	_position = pos;
+}
+
+void FreeCamera::setRotation(quat rot) {
+	_rotation = rot;
+	calculateVectors();
+}
+
+void FreeCamera::setFOV(float fov) {
+	_fov = fov;
 }
 
 void FreeCamera::calculateVectors() {
-	glm::vec3 forward;
-	forward.x = cos(glm::radians(_yaw)) * cos(glm::radians(_pitch));
-	forward.y = sin(glm::radians(_pitch));
-	forward.z = sin(glm::radians(_yaw)) * cos(glm::radians(_pitch));
-	_forward = glm::normalize(forward);
-
-	_right = glm::normalize(glm::cross(_forward, _worldUp));
-	_up = glm::normalize(glm::cross(_right, _forward));
+	_right = Util::transformVec3(vec3(1, 0, 0), glm::toMat4(_rotation));
+	_up = Util::transformVec3(vec3(0, 1, 0), glm::toMat4(_rotation));
+	_forward = Util::transformVec3(vec3(0, 0, -1), glm::toMat4(_rotation));
 }

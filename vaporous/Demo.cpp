@@ -37,6 +37,9 @@ Demo::Demo() :
 	_context.resourceMgr = &_resourceMgr;
 	_context.renderer = &_renderer;
 
+	_roadCam.setScreenSize(_window->getSize());
+	_roadCam.setFOV(75.0f);
+
 	// subscribe to events
 	_context.eventMgr->subscribe(EventType::KeyDown, this);
 }
@@ -77,6 +80,14 @@ void Demo::run() {
 void Demo::update(float dt) {
 	_cam->handleInput();
 	_roadGenerator.update(dt);
+
+	if (camAttached) {
+		_roadCam.setPosition(_road.pointAtDistance(
+			camDistance) + vec3(0, 1, 0));
+		_roadCam.setRotation(_road.rotationAtDistance(
+			camDistance));
+		camDistance += dt * 25.0f;
+	}
 }
 
 void Demo::draw() {
@@ -87,10 +98,17 @@ void Demo::draw() {
 	_renderer.drawPoint(vec3(0, 10, 0), vec4(0, 1, 0, 1));
 	_renderer.drawPoint(vec3(0, 0, 10), vec4(0, 0, 1, 1));
 
-	_roadGenerator.draw();
+	if (!camAttached) _roadGenerator.draw();
 	_road.draw();
 
 	_window->endDraw();
+}
+
+void Demo::toggleRoadCam() {
+	camAttached = !camAttached;
+	camDistance = 0.0f;
+	if (camAttached) _renderer.setCamera(&_roadCam);
+	else _renderer.setCamera(_cam.get());
 }
 
 void Demo::handleEvent(EventType type, EventData data) {
@@ -106,6 +124,9 @@ void Demo::handleEvent(EventType type, EventData data) {
 		}
 		if (data.intData == GLFW_KEY_B) {
 			_road.buildMesh();
+		}
+		if (data.intData == GLFW_KEY_C) {
+			toggleRoadCam();
 		}
 		break;
 	}

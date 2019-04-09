@@ -141,7 +141,7 @@ float Road::length() {
 }
 
 vec3 Road::pointAtDistance(float distance) {
-	distance = glm::clamp(distance, 0.0f, _length);
+	distance = fmod(distance, _length);
 	float sum = 0.0f;
 
 	for (auto segment : _road) {
@@ -152,4 +152,11 @@ vec3 Road::pointAtDistance(float distance) {
 	}
 
 	return _road.back().pointAtDistance(_road.back().arcLength());
+}
+
+quat Road::rotationAtDistance(float distance) {
+	vec3 point = pointAtDistance(distance);
+	vec3 forward = pointAtDistance(distance + 1.0f);
+
+	return glm::inverse(glm::lookAt(point, forward, vec3(0, 1, 0)));
 }

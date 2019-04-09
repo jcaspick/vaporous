@@ -2,6 +2,7 @@
 #include "Context.h"
 #include "GL.h"
 #include "OrbitCamera.h"
+#include "FreeCamera.h"
 #include "Observer.h"
 #include "RoadGenerator.h"
 
@@ -22,15 +23,21 @@ public:
 	virtual void handleEvent(EventType type, EventData data) override;
 
 private:
+	void toggleRoadCam();
+
 	Context _context;
 	GL _glContext;
 	p_Window _window;
 	ResourceManager _resourceMgr;
 	Renderer _renderer;
 	p_Camera _cam;
+	FreeCamera _roadCam;
 
 	RoadGenerator _roadGenerator;
 	Road& _road;
 
 	float _lastFrame;
+
+	bool camAttached = false;
+	float camDistance = 0.0f;
 };
