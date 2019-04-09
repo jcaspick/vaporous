@@ -93,24 +93,4 @@ namespace MeshUtil {
 			return arcCW(segment.radius, segment.angle, width, divisions,
 				segment.distanceOffset(), segment.arcLength(), heightmap);
 	}
-
-	/// <summary>
-	/// Connects two strips of quads. 
-	/// Removes redundant vertices where they connect
-	/// </summary>
-	inline Mesh concat(Mesh a, Mesh b) {
-		a.vertices.pop_back();
-		a.vertices.pop_back();
-		a.vertices.insert(a.vertices.end(), b.vertices.begin(), 
-			b.vertices.end());
-
-		int iOffset = a.indices.back() - 1;
-		for (auto& ind : b.indices) {
-			ind += iOffset;
-		}
-		a.indices.insert(a.indices.end(), b.indices.begin(), 
-			b.indices.end());
-
-		return a;
-	}
 }

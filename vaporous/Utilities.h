@@ -2,6 +2,8 @@
 #include <glm/glm.hpp>
 
 using vec3 = glm::vec3;
+using vec4 = glm::vec4;
+using mat4 = glm::mat4;
 
 namespace CRSpline {
 	inline float interpolate(float t, float p0, 
@@ -45,5 +47,11 @@ namespace Util {
 	inline float easeInOutCubic(float t) {
 		return t < 0.5f ? 4 * t * t * t : (t - 1) * 
 			(2 * t - 2) * (2 * t - 2) + 1;
+	}
+
+	inline vec3 transformVec3(vec3 v, mat4 m) {
+		vec4 v2(v, 1);
+		v2 = m * v2;
+		return { v2.x, v2.y, v2.z };
 	}
 }

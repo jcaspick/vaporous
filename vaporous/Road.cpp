@@ -1,4 +1,5 @@
 #include "Road.h"
+#include "Utilities.h"
 #include "BiarcUtility.h"
 #include "MeshUtilities.h"
 
@@ -37,11 +38,39 @@ void Road::draw() {
 void Road::buildMesh() {
 	if (_road.size() == 0) return;
 
-	_mesh = MeshUtil::segmentMesh(_road.at(0), _width, 1.0f, &_heightMap);
-	//for (int i = 1; i < _road.size(); ++i) {
-	//	Mesh segment = MeshUtil::segmentMesh(_road.at(i), _width, 1.0f);
-	//	_mesh = MeshUtil::concat(_mesh, segment);
-	//}
+	// build mesh from first segment
+	_mesh = MeshUtil::segmentMesh(_road.at(0), _width, 
+		1.0f, &_heightMap);
+
+	// concatenate segments into a single mesh
+	for (int i = 1; i < _road.size(); ++i) {
+		Mesh segment = MeshUtil::segmentMesh(_road.at(i), 
+			_width, 1.0f, &_heightMap);
+		
+		// remove redundant vertices where the meshes meet
+		_mesh.vertices.pop_back();
+		_mesh.vertices.pop_back();
+
+		// get world space vertices
+		for (auto& vertex : segment.vertices) {
+			vertex.position = Util::transformVec3(vertex.position,
+				_road.at(i).getModelMatrix());
+		}
+
+		// concatenate vertices
+		_mesh.vertices.insert(_mesh.vertices.end(), segment.vertices.begin(),
+			segment.vertices.end());
+
+		// offset indices
+		int iOffset = _mesh.indices.back() - 1;
+		for (auto& ind : segment.indices) {
+			ind += iOffset;
+		}
+
+		// concatenate indices
+		_mesh.indices.insert(_mesh.indices.end(), segment.indices.begin(),
+			segment.indices.end());
+	}
 	_mesh.bind();
 }
 
@@ -80,6 +109,7 @@ void Road::removeLastSegment() {
 
 void Road::clear() {
 	_road.clear();
+	_mesh.unbind();
 	_length = 0.0f;
 }
 
