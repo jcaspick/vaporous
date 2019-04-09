@@ -57,7 +57,7 @@ private:
 
 	float _goalLength = 400.0f;
 	float _worldRadius = 100.0f;
-	float _deadZoneRadius = 30.0f;
+	float _deadZoneRadius = 50.0f;
 	int _maxAttemptsPerIter = 4;
 
 	std::vector<Sample> _samples;

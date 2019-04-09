@@ -177,6 +177,24 @@ bool RoadGenerator::evaluateLoop() {
 	RoadSegment a = _road._road.at(_road._road.size() - 2);
 	RoadSegment b = _road._road.at(_road._road.size() - 1);
 
+	// check for intersections
+	for (float d = _furthestSample + _sampleInterval; d < _road.length();
+		d += _sampleInterval)
+	{
+		for (auto itr = _samples.rbegin(); itr != _samples.rend() - 1; ++itr) {
+			vec3 a = _road.pointAtDistance(d);
+			vec3 b = itr->point;
+
+			if (glm::length2(Util::flatten(a) - Util::flatten(b)) <
+				_sampleInterval * _sampleInterval - 0.1f)
+			{
+				if (abs(a.y - b.y) < _minClearance) {
+					return false;
+				}
+			}
+		}
+	}
+
 	// curves shouldn't be sharper than the sharp road segments
 	// or wider than the shallow road segments
 	if (a.radius > 10.0f && a.radius < 90.0f && 
