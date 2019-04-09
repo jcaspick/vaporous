@@ -86,14 +86,16 @@ void Renderer::drawCircle(vec3 center, float radius, vec4 color) {
 	glDrawArrays(GL_LINE_LOOP, 0, _circleResolution);
 }
 
-void Renderer::drawMesh(GLuint vao, GLuint numIndices, mat4 tform, Shader* shader) {
+void Renderer::drawMesh(Mesh& mesh, mat4 tform, Shader* shader) const {
 	if (!_activeCamera) {
 		std::cout << "can't render, no camera set" << std::endl;
 		return;
 	}
 
+	if (!mesh.isBound()) return;
+
 	_context->gl->useShader(shader->id);
-	_context->gl->bindVAO(vao);
+	_context->gl->bindVAO(mesh._vao);
 	_context->gl->setLineMode(false);
 
 	shader->setMat4("model", tform);
@@ -101,7 +103,7 @@ void Renderer::drawMesh(GLuint vao, GLuint numIndices, mat4 tform, Shader* shade
 	shader->setMat4("projection", _activeCamera->getProjectionMatrix());
 	shader->setInt("mainTex", 0);
 
-	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
 }
 
 void Renderer::createPointBuffer() {

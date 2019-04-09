@@ -8,7 +8,8 @@ Demo::Demo() :
 	_lastFrame(0),
 	_resourceMgr(&_context),
 	_renderer(&_context),
-	_roadGenerator(&_context)
+	_roadGenerator(&_context),
+	_road(_roadGenerator.getRoad())
 {
 	// initialize GLFW
 	glfwInit();
@@ -89,6 +90,7 @@ void Demo::draw() {
 	_renderer.drawPoint(vec3(0, 0, 10), vec4(0, 0, 1, 1));
 
 	_roadGenerator.draw();
+	_road.draw();
 
 	_window->endDraw();
 }
@@ -103,6 +105,9 @@ void Demo::handleEvent(EventType type, EventData data) {
 		}
 		if (data.intData == GLFW_KEY_D) {
 			_roadGenerator.reset();
+		}
+		if (data.intData == GLFW_KEY_B) {
+			_road.buildMesh();
 		}
 		break;
 	}

@@ -28,57 +28,29 @@ void Road::debugDraw(float distanceBetweenPoints) {
 }
 
 void Road::draw() {
-	if (_vao.size() == 0) return;
+	//if (_vao.size() == 0) return;
 
-	for (int i = 0; i < _road.size(); i++) {
-		_context->renderer->drawMesh(_vao[i], _numIndices[i],
-			_road.at(i).getModelMatrix(), 
-			&_context->resourceMgr->getShader(Shaders::BasicTextured));
-	}
+	//for (int i = 0; i < _road.size(); i++) {
+	//	_context->renderer->drawMesh(_vao[i], _numIndices[i],
+	//		_road.at(i).getModelMatrix(), 
+	//		&_context->resourceMgr->getShader(Shaders::BasicTextured));
+	//}
+
+	if (_mesh.vertices.size() == 0) return;
+
+	_context->renderer->drawMesh(_mesh, mat4(1),
+		&_context->resourceMgr->getShader(Shaders::BasicTextured));
 }
 
-void Road::buildMeshes() {
+void Road::buildMesh() {
 	if (_road.size() == 0) return;
 
-	for (auto segment : _road) {
-		Mesh mesh;
-		if (segment.orientation == Orientation::Left)
-			mesh = MeshUtil::arcCCW(segment.radius, segment.angle, _width, 16.0f);
-		else
-			mesh = MeshUtil::arcCW(segment.radius, segment.angle, _width, 16.0f);
-
-		GLuint vao, vbo, ebo;
-		glGenVertexArrays(1, &vao);
-		glGenBuffers(1, &vbo);
-		glGenBuffers(1, &ebo);
-
-		glBindVertexArray(vao);
-
-		// vertices
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(Vertex),
-			&mesh.vertices[0], GL_STATIC_DRAW);
-
-		// position attribute
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-			(void*)offsetof(Vertex, position));
-	
-		// texture coord attribute
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-			(void*)offsetof(Vertex, uv));
-
-		// indices
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices.size() * sizeof(GLuint),
-			&mesh.indices[0], GL_STATIC_DRAW);
-
-		_vao.push_back(vao);
-		_vbo.push_back(vbo);
-		_ebo.push_back(ebo);
-		_numIndices.push_back(mesh.indices.size());
-	}
+	_mesh = MeshUtil::segmentMesh(_road.at(0), _width, 1.0f);
+	//for (int i = 1; i < _road.size(); ++i) {
+	//	Mesh segment = MeshUtil::segmentMesh(_road.at(i), _width, 1.0f);
+	//	_mesh = MeshUtil::concat(_mesh, segment);
+	//}
+	_mesh.bind();
 }
 
 void Road::addSegment(float angle, float radius, Orientation orientation) {
@@ -117,21 +89,6 @@ void Road::removeLastSegment() {
 void Road::clear() {
 	_road.clear();
 	_length = 0.0f;
-
-	for (auto vao : _vao) {
-		glDeleteVertexArrays(1, &vao);
-	}
-	for (auto vbo : _vbo) {
-		glDeleteBuffers(1, &vbo);
-	}
-	for (auto ebo : _ebo) {
-		glDeleteBuffers(1, &ebo);
-	}
-
-	_vao.clear();
-	_vbo.clear();
-	_ebo.clear();
-	_numIndices.clear();
 }
 
 void Road::initializeHeightmap(float distance, float interval,

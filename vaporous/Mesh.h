@@ -16,8 +16,22 @@ struct Vertex {
 
 using Vertices = std::vector<Vertex>;
 using Indices = std::vector<unsigned int>;
+using GLuint = unsigned int;
 
-struct Mesh {
+class Mesh {
+	friend class Renderer;
+
+public:
+	Mesh();
+	~Mesh();
+	void bind();
+	void unbind();
+	bool isBound();
+
 	Vertices vertices;
 	Indices indices;
+
+private:
+	bool _isBound;
+	GLuint _vao, _vbo, _ebo;
 };

@@ -30,6 +30,7 @@ private:
 	p_Camera _cam;
 
 	RoadGenerator _roadGenerator;
+	Road& _road;
 
 	float _lastFrame;
 };

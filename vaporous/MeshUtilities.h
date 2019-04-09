@@ -1,5 +1,6 @@
 #pragma once
-#include "MeshData.h"
+#include "Mesh.h"
+#include "RoadSegment.h"
 #include <vector>
 
 namespace MeshUtil {
@@ -67,5 +68,33 @@ namespace MeshUtil {
 		}
 
 		return arc;
+	}
+
+	inline Mesh segmentMesh(RoadSegment segment, float width, float quality) {
+		int divisions = ceil(quality * segment.arcLength());
+		if (segment.orientation == Orientation::Left)
+			return arcCCW(segment.radius, segment.angle, width, divisions);
+		else
+			return arcCW(segment.radius, segment.angle, width, divisions);
+	}
+
+	/// <summary>
+	/// Connects two strips of quads. 
+	/// Removes redundant vertices where they connect
+	/// </summary>
+	inline Mesh concat(Mesh a, Mesh b) {
+		a.vertices.pop_back();
+		a.vertices.pop_back();
+		a.vertices.insert(a.vertices.end(), b.vertices.begin(), 
+			b.vertices.end());
+
+		int iOffset = a.indices.back() - 1;
+		for (auto& ind : b.indices) {
+			ind += iOffset;
+		}
+		a.indices.insert(a.indices.end(), b.indices.begin(), 
+			b.indices.end());
+
+		return a;
 	}
 }

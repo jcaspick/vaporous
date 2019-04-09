@@ -121,7 +121,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Arc.cpp" />
     <ClCompile Include="Demo.cpp" />
     <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="FreeCamera.cpp" />
@@ -130,6 +129,7 @@
     <ClCompile Include="HeightMap.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="OrbitCamera.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
@@ -142,7 +142,6 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Arc.h" />
     <ClInclude Include="BiarcUtility.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Context.h" />
@@ -153,7 +152,7 @@
     <ClInclude Include="GL.h" />
     <ClInclude Include="HeightMap.h" />
     <ClInclude Include="InputManager.h" />
-    <ClInclude Include="MeshData.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshUtilities.h" />
     <ClInclude Include="Observer.h" />
     <ClInclude Include="OrbitCamera.h" />

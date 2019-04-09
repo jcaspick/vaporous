@@ -1,8 +1,8 @@
 #pragma once
-#include "RoadSegment.h"
 #include "Context.h"
+#include "RoadSegment.h"
 #include "HeightMap.h"
-#include <vector>
+#include "Mesh.h"
 
 class Road {
 	friend class RoadGenerator;
@@ -11,7 +11,7 @@ public:
 	Road(Context* context);
 	void debugDraw(float distanceBetweenPoints);
 	void draw();
-	void buildMeshes();
+	void buildMesh();
 
 	void addSegment(float angle, float radius, Orientation orientation);
 	void closeLoop();
@@ -30,12 +30,8 @@ private:
 
 	std::vector<RoadSegment> _road;
 	float _length;
-	float _width = 1.0f;
+	float _width = 4.0f;
 
 	HeightMap _heightMap;
-
-	std::vector<GLuint> _vao;
-	std::vector<GLuint> _vbo;
-	std::vector<GLuint> _ebo;
-	std::vector<GLuint> _numIndices;
+	Mesh _mesh;
 };

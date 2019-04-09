@@ -17,6 +17,7 @@ public:
 	void draw();
 	void start();
 	void reset();
+	Road& getRoad();
 
 	float pStraight = 0.1875f;
 	float pShallow = 0.1875f;

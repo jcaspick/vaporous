@@ -63,9 +63,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Demo</Filter>
     </ClCompile>
-    <ClCompile Include="Arc.cpp">
-      <Filter>Demo</Filter>
-    </ClCompile>
     <ClCompile Include="Transformable.cpp">
       <Filter>Demo</Filter>
     </ClCompile>
@@ -82,6 +79,9 @@
       <Filter>Demo</Filter>
     </ClCompile>
     <ClCompile Include="RoadGenerator.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
       <Filter>Demo</Filter>
     </ClCompile>
   </ItemGroup>
@@ -137,12 +137,6 @@
     <ClInclude Include="MeshUtilities.h">
       <Filter>Demo</Filter>
     </ClInclude>
-    <ClInclude Include="MeshData.h">
-      <Filter>Demo</Filter>
-    </ClInclude>
-    <ClInclude Include="Arc.h">
-      <Filter>Demo</Filter>
-    </ClInclude>
     <ClInclude Include="Transformable.h">
       <Filter>Demo</Filter>
     </ClInclude>
@@ -165,6 +159,9 @@
       <Filter>Demo</Filter>
     </ClInclude>
     <ClInclude Include="RoadGenerator.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
       <Filter>Demo</Filter>
     </ClInclude>
   </ItemGroup>

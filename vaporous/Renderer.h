@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include "Shader.h"
 #include "Camera.h"
+#include "Mesh.h"
 
 using vec3 = glm::vec3;
 using vec4 = glm::vec4;
@@ -18,7 +19,7 @@ public:
 	void drawPoint(vec3 point, vec4 color, float size = 1.0f);
 	void drawLine(vec3 a, vec3 b, vec4 color);
 	void drawCircle(vec3 center, float radius, vec4 color);
-	void drawMesh(GLuint vao, GLuint numIndices, mat4 tform, Shader* shader);
+	void drawMesh(Mesh& mesh, mat4 tform, Shader* shader) const;
 
 private:
 	void createPointBuffer();

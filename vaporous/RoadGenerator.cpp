@@ -55,6 +55,10 @@ void RoadGenerator::reset() {
 	_generating = false;
 }
 
+Road& RoadGenerator::getRoad() {
+	return _road;
+}
+
 void RoadGenerator::step() {
 	if (_stack.empty()) {
 		std::cout << "road generation failed" << std::endl;
