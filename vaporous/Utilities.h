@@ -70,4 +70,13 @@ namespace Util {
 		}
 		return a;
 	}
+
+	inline int wrapRangeInt(int a, int min, int max) {
+		if (a < min) {
+			return a + (max - min);
+		}
+		else if (a > max) {
+			return a % max;
+		}
+	}
 }

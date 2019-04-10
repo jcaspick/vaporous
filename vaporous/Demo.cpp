@@ -53,8 +53,8 @@ Demo::Demo() :
 	_context.resourceMgr = &_resourceMgr;
 	_context.renderer = &_renderer;
 
-	_roadCam.setScreenSize(_window->getSize());
-	_roadCam.setFOV(75.0f);
+	_followCam.setScreenSize(_window->getSize());
+	_followCam.setFOV(75.0f);
 	_car.init();
 
 	// subscribe to events
@@ -101,16 +101,13 @@ void Demo::update(float dt) {
 	_roadGenerator.update(dt);
 
 	if (isRunning) {
-		_roadCam.setPosition(_road.pointAtDistance(
-			carDistance - camFollowDistance) + vec3(0, camHeight, 0) + 
-			_car.right() * xOffsets.sample(carDistance - camFollowDistance));
-		_roadCam.setRotation(_road.rotationAtDistance(
-			carDistance - camFollowDistance));
-
-		_car.setPosition(_road.pointAtDistance(carDistance)
-			+ _car.right() * xOffsets.sample(carDistance));
+		_car.setPosition(sampleMotionPath(carDistance));
 		_car.setRotation(_road.rotationAtDistance(
 			carDistance + carRotationOffset));
+
+		_followCam.setPosition(sampleMotionPath(carDistance
+			- camFollowDistance) + vec3(0, camHeight, 0));
+		_followCam.setTarget(_car.getPosition());
 
 		carDistance += dt * carSpeed;
 	}
@@ -124,20 +121,10 @@ void Demo::draw() {
 	_renderer.drawPoint(vec3(0, 10, 0), vec4(0, 1, 0, 1));
 	_renderer.drawPoint(vec3(0, 0, 10), vec4(0, 0, 1, 1));
 
-	if (!xOffsets.empty()) {
-		vec3 last = _road.pointAtDistance(0.0f) + Util::rotateVec3(vec3(1, 0, 0),
-			glm::toMat4(_road.rotationAtDistance(0.0f))) * xOffsets.sample(0.0f);
-		for (float d = 0.0f; d < _road.length(); d += 0.9f) {
-			vec3 point = _road.pointAtDistance(d) + Util::rotateVec3(vec3(-1, 0, 0),
-				glm::toMat4(_road.rotationAtDistance(d))) * xOffsets.sample(d);
-			_renderer.drawLine(last, point, vec4(1, 1, 1, 1));
-			last = point;
-		}
-	}
+	//drawMotionPath();
 
 	_resourceMgr.bindTexture(Textures::Rainbow);
 	_road.draw();
-
 	_resourceMgr.bindTexture(Textures::CarDiffuse);
 	_car.draw();
 
@@ -149,30 +136,41 @@ void Demo::draw() {
 void Demo::toggleRunning() {
 	isRunning = !isRunning;
 	carDistance = 0.0f;
-	if (isRunning) _renderer.setCamera(&_roadCam);
+	if (isRunning) _renderer.setCamera(&_followCam);
 	else _renderer.setCamera(_cam.get());
 }
 
 void Demo::buildMotionPath() {
-	xOffsets.clear();
+	_xOffsets.clear();
 
-	for (float d = 0.0f; d < _road.length(); d += 10.0f) {
-		xOffsets.addPoint(getOffsetAtDistance(d), 10.0f);
+	// snap the interval to a value that divides evenly into the road length
+	float scaledInterval = _motionPathInterval + fmod(_road.length(), 
+		_motionPathInterval) / floor(_road.length() / _motionPathInterval);
+	_xOffsets.setInterval(scaledInterval);
+
+	for (float d = 0.0f; d < _road.length() - 0.5f; d += scaledInterval) {
+		_xOffsets.addValue(offsetAtDistance(d));
 	}
 
-	xOffsets.setLoopDistance(_road.length());
+	std::cout << _xOffsets.length() << std::endl;
+	std::cout << _road.length() << std::endl;
 }
 
-float Demo::getOffsetAtDistance(float d) {
+float Demo::offsetAtDistance(float d) {
 	float total = 0;
-
-	for (int i = 0; i < numSamples; i++) {
-		float sampleDistance = d + (i * (sampleRange / numSamples)
-			- (sampleRange / 2)) + rangeOffset;
+	for (int i = 0; i < _numSamples; i++) {
+		float sampleDistance = d + (i * (_sampleRange / _numSamples)
+			- (_sampleRange / 2)) + _rangeOffset;
 		total += _road.sharpnessAtDistance(sampleDistance);
 	}
+	return total / _numSamples;
+}
 
-	return driftStrength * (total / numSamples);
+vec3 Demo::sampleMotionPath(float d) {
+	vec3 center = _road.pointAtDistance(d);
+	vec3 right = Util::rotateVec3(vec3(-1, 0, 0),
+		glm::toMat4(_road.rotationAtDistance(d)));
+	return center + _xOffsets.sample(d) * _offsetStrength * right;
 }
 
 void Demo::handleEvent(EventType type, EventData data) {
@@ -181,6 +179,7 @@ void Demo::handleEvent(EventType type, EventData data) {
 		if (data.intData == GLFW_KEY_ESCAPE)
 			_window->close();
 		if (data.intData == GLFW_KEY_S) {
+			_xOffsets.clear();
 			_roadGenerator.generate();
 		}
 		if (data.intData == GLFW_KEY_D) {
@@ -199,6 +198,26 @@ void Demo::handleEvent(EventType type, EventData data) {
 	}
 }
 
+void Demo::drawMotionPath() {
+	if (!_xOffsets.empty()) {
+		float interval = _motionPathInterval + fmod(_road.length(), _motionPathInterval)
+			/ floor(_road.length() / _motionPathInterval);
+
+		// draw path
+		vec3 last = sampleMotionPath(0.0f);
+		for (float d = 0.0f; d < _road.length(); d += interval / 4.0f) {
+			vec3 point = sampleMotionPath(d);
+			_renderer.drawLine(last, point, vec4(1, 0.5f, 1, 1));
+			last = point;
+		}
+
+		// draw control points
+		for (float d = 0.0f; d < _road.length(); d += interval) {
+			_renderer.drawPoint(_road.pointAtDistance(d), vec4(1, 0, 1, 1), 3.0f);
+		}
+	}
+}
+
 void Demo::drawUI() {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
@@ -207,7 +226,6 @@ void Demo::drawUI() {
 	ImGui::Begin("Debug");
 
 	ImGui::DragFloat("carSpeed", &carSpeed);
-	ImGui::DragFloat("driftStrength", &driftStrength);
 	ImGui::DragFloat("carRotationOffset", &carRotationOffset);
 
 	ImGui::Separator();
@@ -217,9 +235,10 @@ void Demo::drawUI() {
 
 	ImGui::Separator();
 
-	ImGui::DragFloat("sampleRange", &sampleRange);
-	ImGui::DragFloat("rangeOffset", &rangeOffset);
-	ImGui::DragInt("numSamples", &numSamples);
+	ImGui::DragFloat("motionPathInterval", &_motionPathInterval);
+	ImGui::DragFloat("sampleRange", &_sampleRange);
+	ImGui::DragFloat("rangeOffset", &_rangeOffset);
+	ImGui::DragInt("numSamples", &_numSamples);
 	ImGui::End();
 
 	ImGui::Render();

@@ -2,10 +2,11 @@
 #include "Context.h"
 #include "GL.h"
 #include "OrbitCamera.h"
-#include "FreeCamera.h"
+#include "TargetCamera.h"
 #include "Observer.h"
 #include "RoadGenerator.h"
 #include "Car.h"
+#include "LoopingSpline.h"
 
 #include <memory>
 
@@ -21,13 +22,15 @@ public:
 	void run();
 	void update(float dt);
 	void draw();
+	void drawMotionPath();
 	void drawUI();
 	virtual void handleEvent(EventType type, EventData data) override;
 
 private:
 	void toggleRunning();
 	void buildMotionPath();
-	float getOffsetAtDistance(float d);
+	float offsetAtDistance(float d);
+	vec3 sampleMotionPath(float d);
 
 	Context _context;
 	GL _glContext;
@@ -35,7 +38,7 @@ private:
 	ResourceManager _resourceMgr;
 	Renderer _renderer;
 	p_Camera _cam;
-	FreeCamera _roadCam;
+	TargetCamera _followCam;
 
 	RoadGenerator _roadGenerator;
 	Road& _road;
@@ -48,12 +51,13 @@ private:
 	float camFollowDistance = 2.0f;
 	float camHeight = 0.5f;
 
-	float sampleRange = 50.0f;
-	float rangeOffset = -15.0f;
-	int numSamples = 50;
-	float driftStrength = 2.0f;
 	float carSpeed = 20.0f;
 	float carRotationOffset = 4.0f;
 
-	HeightMap xOffsets;
+	LoopingSpline _xOffsets;
+	float _motionPathInterval = 10.0f;
+	float _sampleRange = 50.0f;
+	float _rangeOffset = -15.0f;
+	int _numSamples = 50;
+	float _offsetStrength = 2.0f;
 };

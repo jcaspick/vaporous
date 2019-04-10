@@ -105,6 +105,12 @@
     <ClCompile Include="Car.cpp">
       <Filter>Demo</Filter>
     </ClCompile>
+    <ClCompile Include="TargetCamera.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
+    <ClCompile Include="LoopingSpline.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h">
@@ -210,6 +216,12 @@
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Car.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="TargetCamera.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="LoopingSpline.h">
       <Filter>Demo</Filter>
     </ClInclude>
   </ItemGroup>
