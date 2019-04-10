@@ -5,6 +5,7 @@
 #include "FreeCamera.h"
 #include "Observer.h"
 #include "RoadGenerator.h"
+#include "Car.h"
 
 #include <memory>
 
@@ -24,8 +25,9 @@ public:
 	virtual void handleEvent(EventType type, EventData data) override;
 
 private:
-	void toggleRoadCam();
-	void movingAverage();
+	void toggleRunning();
+	void buildMotionPath();
+	float getOffsetAtDistance(float d);
 
 	Context _context;
 	GL _glContext;
@@ -37,14 +39,20 @@ private:
 
 	RoadGenerator _roadGenerator;
 	Road& _road;
-	Mesh _car;
+	Car _car;
 
 	float _lastFrame;
 
-	bool camAttached = false;
-	float camDistance = 0.0f;
+	bool isRunning = false;
+	float carDistance = 0.0f;
+	float camFollowDistance = 2.0f;
+	float camHeight = 0.5f;
+
 	std::vector<vec3> averagePoints;
-	float sampleRange = 20.0f;
-	float rangeOffset = 0.0f;
-	int numSamples = 10;
+	float sampleRange = 50.0f;
+	float rangeOffset = -15.0f;
+	int numSamples = 50;
+	float driftStrength = 2.0f;
+	float carSpeed = 20.0f;
+	float carRotationOffset = -4.0f;
 };

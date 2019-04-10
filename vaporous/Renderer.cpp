@@ -86,6 +86,15 @@ void Renderer::drawCircle(vec3 center, float radius, vec4 color) {
 	glDrawArrays(GL_LINE_LOOP, 0, _circleResolution);
 }
 
+void Renderer::drawAxis(Transformable* tform, float size) {
+	drawLine(tform->getPosition(), tform->getPosition()
+		+ tform->right() * size, vec4(1, 0, 0, 1));
+	drawLine(tform->getPosition(), tform->getPosition()
+		+ tform->up() * size, vec4(0, 1, 0, 1));
+	drawLine(tform->getPosition(), tform->getPosition()
+		+ tform->forward() * size, vec4(0, 0, 1, 1));
+}
+
 void Renderer::drawMesh(Mesh& mesh, mat4 tform, Shader* shader) const {
 	if (!_activeCamera) {
 		std::cout << "can't render, no camera set" << std::endl;

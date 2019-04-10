@@ -44,5 +44,5 @@ void FreeCamera::setFOV(float fov) {
 void FreeCamera::calculateVectors() {
 	_right = Util::transformVec3(vec3(1, 0, 0), glm::toMat4(_rotation));
 	_up = Util::transformVec3(vec3(0, 1, 0), glm::toMat4(_rotation));
-	_forward = Util::transformVec3(vec3(0, 0, -1), glm::toMat4(_rotation));
+	_forward = Util::transformVec3(vec3(0, 0, 1), glm::toMat4(_rotation));
 }

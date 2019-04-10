@@ -1,4 +1,5 @@
 #include "Transformable.h"
+#include "Utilities.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 Transformable::Transformable() :
@@ -33,4 +34,16 @@ mat4 Transformable::getModelMatrix() {
 	model = model * glm::toMat4(_rotation);
 	model = glm::scale(model, _scale);
 	return model;
+}
+
+vec3 Transformable::forward() {
+	return Util::rotateVec3(vec3(0, 0, 1), getModelMatrix());
+}
+
+vec3 Transformable::up() {
+	return Util::rotateVec3(vec3(0, 1, 0), getModelMatrix());
+}
+
+vec3 Transformable::right() {
+	return Util::rotateVec3(vec3(-1, 0, 0), getModelMatrix());
 }

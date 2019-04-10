@@ -156,7 +156,7 @@ vec3 Road::pointAtDistance(float distance) {
 
 quat Road::rotationAtDistance(float distance) {
 	vec3 point = pointAtDistance(distance);
-	vec3 forward = pointAtDistance(distance + 1.0f);
+	vec3 forward = pointAtDistance(distance - 1.0f);
 
 	return glm::inverse(glm::lookAt(point, forward, vec3(0, 1, 0)));
 }

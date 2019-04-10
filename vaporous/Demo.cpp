@@ -1,5 +1,4 @@
 #include "Demo.h"
-#include "MeshUtilities.h"
 #include "Utilities.h"
 
 #include <glad\glad.h>
@@ -17,7 +16,8 @@ Demo::Demo() :
 	_resourceMgr(&_context),
 	_renderer(&_context),
 	_roadGenerator(&_context),
-	_road(_roadGenerator.getRoad())
+	_road(_roadGenerator.getRoad()),
+	_car(&_context)
 {
 	// initialize GLFW
 	glfwInit();
@@ -55,8 +55,7 @@ Demo::Demo() :
 
 	_roadCam.setScreenSize(_window->getSize());
 	_roadCam.setFOV(75.0f);
-	_car = MeshUtil::loadFromObj("resources/car.obj", 0.1f);
-	_car.bind();
+	_car.init();
 
 	// subscribe to events
 	_context.eventMgr->subscribe(EventType::KeyDown, this);
@@ -101,12 +100,18 @@ void Demo::update(float dt) {
 	_cam->handleInput();
 	_roadGenerator.update(dt);
 
-	if (camAttached) {
+	if (isRunning) {
 		_roadCam.setPosition(_road.pointAtDistance(
-			camDistance) + vec3(0, 1, 0));
+			carDistance - camFollowDistance) + vec3(0, camHeight, 0));
 		_roadCam.setRotation(_road.rotationAtDistance(
-			camDistance));
-		camDistance += dt * 25.0f;
+			carDistance - camFollowDistance));
+
+		_car.setPosition(_road.pointAtDistance(carDistance)
+			+ _car.right() * getOffsetAtDistance(carDistance));
+		_car.setRotation(_road.rotationAtDistance(
+			carDistance + carRotationOffset));
+
+		carDistance += dt * carSpeed;
 	}
 }
 
@@ -127,25 +132,24 @@ void Demo::draw() {
 	}
 
 	_resourceMgr.bindTexture(Textures::Rainbow);
-	//if (!camAttached) _roadGenerator.draw();
 	_road.draw();
 
 	_resourceMgr.bindTexture(Textures::CarDiffuse);
-	_renderer.drawMesh(_car, mat4(1), &_resourceMgr.getShader(Shaders::BasicTextured));
+	_car.draw();
 
 	drawUI();
 
 	_window->endDraw();
 }
 
-void Demo::toggleRoadCam() {
-	camAttached = !camAttached;
-	camDistance = 0.0f;
-	if (camAttached) _renderer.setCamera(&_roadCam);
+void Demo::toggleRunning() {
+	isRunning = !isRunning;
+	carDistance = 0.0f;
+	if (isRunning) _renderer.setCamera(&_roadCam);
 	else _renderer.setCamera(_cam.get());
 }
 
-void Demo::movingAverage() {
+void Demo::buildMotionPath() {
 	averagePoints.clear();
 	float totalSharpness = 0;
 
@@ -165,6 +169,18 @@ void Demo::movingAverage() {
 	}
 }
 
+float Demo::getOffsetAtDistance(float d) {
+	float total = 0;
+
+	for (int i = 0; i < numSamples; i++) {
+		float sampleDistance = d + (i * (sampleRange / numSamples)
+			- (sampleRange / 2)) + rangeOffset;
+		total += _road.sharpnessAtDistance(sampleDistance);
+	}
+
+	return driftStrength * (total / numSamples);
+}
+
 void Demo::handleEvent(EventType type, EventData data) {
 	switch (type) {
 	case EventType::KeyDown:
@@ -180,10 +196,10 @@ void Demo::handleEvent(EventType type, EventData data) {
 			_road.buildMesh();
 		}
 		if (data.intData == GLFW_KEY_C) {
-			toggleRoadCam();
+			toggleRunning();
 		}
 		if (data.intData == GLFW_KEY_M) {
-			movingAverage();
+			buildMotionPath();
 		}
 		break;
 	}
@@ -195,6 +211,18 @@ void Demo::drawUI() {
 	ImGui::NewFrame();
 
 	ImGui::Begin("Debug");
+
+	ImGui::DragFloat("carSpeed", &carSpeed);
+	ImGui::DragFloat("driftStrength", &driftStrength);
+	ImGui::DragFloat("carRotationOffset", &carRotationOffset);
+
+	ImGui::Separator();
+
+	ImGui::DragFloat("camFollowDistance", &camFollowDistance, 0.1f);
+	ImGui::DragFloat("camHeight", &camHeight, 0.1f);
+
+	ImGui::Separator();
+
 	ImGui::DragFloat("sampleRange", &sampleRange);
 	ImGui::DragFloat("rangeOffset", &rangeOffset);
 	ImGui::DragInt("numSamples", &numSamples);

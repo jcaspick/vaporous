@@ -102,6 +102,9 @@
     <ClCompile Include="include\imgui\imgui_widgets.cpp">
       <Filter>Include</Filter>
     </ClCompile>
+    <ClCompile Include="Car.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h">
@@ -205,6 +208,9 @@
     </ClInclude>
     <ClInclude Include="include\imgui\imstb_truetype.h">
       <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Car.h">
+      <Filter>Demo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

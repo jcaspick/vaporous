@@ -4,6 +4,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Mesh.h"
+#include "Transformable.h"
 
 using vec3 = glm::vec3;
 using vec4 = glm::vec4;
@@ -20,6 +21,7 @@ public:
 	void drawLine(vec3 a, vec3 b, vec4 color);
 	void drawCircle(vec3 center, float radius, vec4 color);
 	void drawMesh(Mesh& mesh, mat4 tform, Shader* shader) const;
+	void drawAxis(Transformable* tform, float size = 1.0f);
 
 private:
 	void createPointBuffer();

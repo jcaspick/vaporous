@@ -16,6 +16,9 @@ public:
 	void setRotation(quat rot);
 	void move(vec3 offset);
 	mat4 getModelMatrix();
+	vec3 forward();
+	vec3 up();
+	vec3 right();
 
 protected:
 	vec3 _position;

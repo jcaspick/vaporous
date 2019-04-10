@@ -55,6 +55,12 @@ namespace Util {
 		return { v2.x, v2.y, v2.z };
 	}
 
+	inline vec3 rotateVec3(vec3 v, mat4 m) {
+		vec4 v2(v, 0);
+		v2 = m * v2;
+		return { v2.x, v2.y, v2.z };
+	}
+
 	inline float wrapRange(float a, float min, float max) {
 		if (a < min) {
 			a += (max - min);

@@ -121,6 +121,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Car.cpp" />
     <ClCompile Include="Demo.cpp" />
     <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="FreeCamera.cpp" />
@@ -150,6 +151,7 @@
   <ItemGroup>
     <ClInclude Include="BiarcUtility.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Car.h" />
     <ClInclude Include="Context.h" />
     <ClInclude Include="Demo.h" />
     <ClInclude Include="EventData.h" />
