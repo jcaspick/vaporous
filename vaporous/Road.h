@@ -25,6 +25,7 @@ public:
 	float length();
 	vec3 pointAtDistance(float distance);
 	quat rotationAtDistance(float distance);
+	float sharpnessAtDistance(float distance);
 
 private:
 	Context* _context;

@@ -54,4 +54,14 @@ namespace Util {
 		v2 = m * v2;
 		return { v2.x, v2.y, v2.z };
 	}
+
+	inline float wrapRange(float a, float min, float max) {
+		if (a < min) {
+			a += (max - min);
+		}
+		else if (a > max) {
+			a = fmod(a, max);
+		}
+		return a;
+	}
 }

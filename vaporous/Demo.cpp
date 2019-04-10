@@ -1,9 +1,16 @@
 #include "Demo.h"
 #include "MeshUtilities.h"
+#include "Utilities.h"
 
 #include <glad\glad.h>
 #include <GLFW\glfw3.h>
 #include <iostream>
+
+#define IMGUI_IMPL_OPENGL_LOADER_GLAD
+
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_glfw.h>
+#include <imgui/imgui_impl_opengl3.h>
 
 Demo::Demo() :
 	_lastFrame(0),
@@ -25,6 +32,14 @@ Demo::Demo() :
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		throw std::exception("Failed to initialize GLAD");
 	}
+
+	// initialize ImGui
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGui_ImplGlfw_InitForOpenGL(_window->getGlfwWindow(), true);
+	ImGui_ImplOpenGL3_Init("#version 330");
+	ImGui::StyleColorsDark();
 
 	// initialize window (create viewport)
 	_window->init();
@@ -103,12 +118,22 @@ void Demo::draw() {
 	_renderer.drawPoint(vec3(0, 10, 0), vec4(0, 1, 0, 1));
 	_renderer.drawPoint(vec3(0, 0, 10), vec4(0, 0, 1, 1));
 
+	if (averagePoints.size() > 0) {
+		vec3 last = averagePoints.front();
+		for (auto point : averagePoints) {
+			_renderer.drawLine(last, point, vec4(1, 1, 1, 1));
+			last = point;
+		}
+	}
+
 	_resourceMgr.bindTexture(Textures::Rainbow);
-	if (!camAttached) _roadGenerator.draw();
+	//if (!camAttached) _roadGenerator.draw();
 	_road.draw();
 
 	_resourceMgr.bindTexture(Textures::CarDiffuse);
 	_renderer.drawMesh(_car, mat4(1), &_resourceMgr.getShader(Shaders::BasicTextured));
+
+	drawUI();
 
 	_window->endDraw();
 }
@@ -118,6 +143,26 @@ void Demo::toggleRoadCam() {
 	camDistance = 0.0f;
 	if (camAttached) _renderer.setCamera(&_roadCam);
 	else _renderer.setCamera(_cam.get());
+}
+
+void Demo::movingAverage() {
+	averagePoints.clear();
+	float totalSharpness = 0;
+
+	for (float d = 0.0f; d < _road.length(); d += 2.0f) {
+		vec3 point = _road.pointAtDistance(d);
+		quat rot = _road.rotationAtDistance(d);
+		totalSharpness = 0;
+
+		for (int i = 0; i < numSamples; i++) {
+			float sampleDistance = d + (i * (sampleRange / numSamples)
+				- (sampleRange / 2)) + rangeOffset;
+			totalSharpness += _road.sharpnessAtDistance(sampleDistance);
+		}
+
+		averagePoints.emplace_back(point + Util::transformVec3(
+			(totalSharpness / numSamples) * 4.0f * vec3(1, 0, 0), glm::toMat4(rot)));
+	}
 }
 
 void Demo::handleEvent(EventType type, EventData data) {
@@ -137,6 +182,24 @@ void Demo::handleEvent(EventType type, EventData data) {
 		if (data.intData == GLFW_KEY_C) {
 			toggleRoadCam();
 		}
+		if (data.intData == GLFW_KEY_M) {
+			movingAverage();
+		}
 		break;
 	}
+}
+
+void Demo::drawUI() {
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
+	ImGui::Begin("Debug");
+	ImGui::DragFloat("sampleRange", &sampleRange);
+	ImGui::DragFloat("rangeOffset", &rangeOffset);
+	ImGui::DragInt("numSamples", &numSamples);
+	ImGui::End();
+
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }

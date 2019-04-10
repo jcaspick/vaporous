@@ -141,7 +141,7 @@ float Road::length() {
 }
 
 vec3 Road::pointAtDistance(float distance) {
-	distance = fmod(distance, _length);
+	distance = Util::wrapRange(distance, 0, _length);
 	float sum = 0.0f;
 
 	for (auto segment : _road) {
@@ -159,4 +159,27 @@ quat Road::rotationAtDistance(float distance) {
 	vec3 forward = pointAtDistance(distance + 1.0f);
 
 	return glm::inverse(glm::lookAt(point, forward, vec3(0, 1, 0)));
+}
+
+float Road::sharpnessAtDistance(float distance) {
+	distance = Util::wrapRange(distance, 0, _length);
+	float sum = 0.0f;
+
+	for (auto segment : _road) {
+		if (sum + segment.arcLength() >= distance) {
+			float sharpness = Util::easeInCubic(1.0f
+				- std::min(segment.radius / 100.0f, 1.0f));
+			if (segment.orientation == Orientation::Left)
+				return sharpness;
+			else
+				return -sharpness;
+		}
+		sum += segment.arcLength();
+	}
+
+	float sharpness = 1.0f - (_road.back().radius / 100.0f);
+	if (_road.back().orientation == Orientation::Left)
+		return sharpness;
+	else
+		return -sharpness;
 }

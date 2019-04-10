@@ -4,6 +4,7 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 notes.txt
+imgui.ini
 
 # User-specific files
 *.suo

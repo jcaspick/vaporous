@@ -20,10 +20,12 @@ public:
 	void run();
 	void update(float dt);
 	void draw();
+	void drawUI();
 	virtual void handleEvent(EventType type, EventData data) override;
 
 private:
 	void toggleRoadCam();
+	void movingAverage();
 
 	Context _context;
 	GL _glContext;
@@ -41,4 +43,8 @@ private:
 
 	bool camAttached = false;
 	float camDistance = 0.0f;
+	std::vector<vec3> averagePoints;
+	float sampleRange = 20.0f;
+	float rangeOffset = 0.0f;
+	int numSamples = 10;
 };
