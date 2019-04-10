@@ -48,11 +48,12 @@ private:
 	float camFollowDistance = 2.0f;
 	float camHeight = 0.5f;
 
-	std::vector<vec3> averagePoints;
 	float sampleRange = 50.0f;
 	float rangeOffset = -15.0f;
 	int numSamples = 50;
 	float driftStrength = 2.0f;
 	float carSpeed = 20.0f;
-	float carRotationOffset = -4.0f;
+	float carRotationOffset = 4.0f;
+
+	HeightMap xOffsets;
 };

@@ -16,6 +16,7 @@ public:
 	float getLength();
 	void addPoint(float height, float interval);
 	void setLoopDistance(float loopDistance);
+	bool empty();
 	void clear();
 
 private:

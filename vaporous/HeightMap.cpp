@@ -17,9 +17,6 @@ float HeightMap::sample(float distance) {
 	if (distance <= 0) {
 		return 0.0f;
 	}
-	else if (distance >= _length) {
-		return _heightMap.back().height;
-	}
 
 	for (int i = 0; i < _heightMap.size() - 1; i++) {
 		if (_heightMap[i + 1].distance >= distance) {
@@ -43,6 +40,8 @@ float HeightMap::sample(float distance) {
 			}
 		}
 	}
+
+	return _heightMap.back().height;
 }
 
 float HeightMap::getLength() {
@@ -56,6 +55,10 @@ void HeightMap::addPoint(float height, float interval) {
 
 void HeightMap::setLoopDistance(float loopDistance) {
 	_loopDistance = loopDistance;
+}
+
+bool HeightMap::empty() {
+	return _heightMap.size() <= 1;
 }
 
 void HeightMap::clear() {

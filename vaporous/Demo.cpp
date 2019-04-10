@@ -102,12 +102,13 @@ void Demo::update(float dt) {
 
 	if (isRunning) {
 		_roadCam.setPosition(_road.pointAtDistance(
-			carDistance - camFollowDistance) + vec3(0, camHeight, 0));
+			carDistance - camFollowDistance) + vec3(0, camHeight, 0) + 
+			_car.right() * xOffsets.sample(carDistance - camFollowDistance));
 		_roadCam.setRotation(_road.rotationAtDistance(
 			carDistance - camFollowDistance));
 
 		_car.setPosition(_road.pointAtDistance(carDistance)
-			+ _car.right() * getOffsetAtDistance(carDistance));
+			+ _car.right() * xOffsets.sample(carDistance));
 		_car.setRotation(_road.rotationAtDistance(
 			carDistance + carRotationOffset));
 
@@ -123,9 +124,12 @@ void Demo::draw() {
 	_renderer.drawPoint(vec3(0, 10, 0), vec4(0, 1, 0, 1));
 	_renderer.drawPoint(vec3(0, 0, 10), vec4(0, 0, 1, 1));
 
-	if (averagePoints.size() > 0) {
-		vec3 last = averagePoints.front();
-		for (auto point : averagePoints) {
+	if (!xOffsets.empty()) {
+		vec3 last = _road.pointAtDistance(0.0f) + Util::rotateVec3(vec3(1, 0, 0),
+			glm::toMat4(_road.rotationAtDistance(0.0f))) * xOffsets.sample(0.0f);
+		for (float d = 0.0f; d < _road.length(); d += 0.9f) {
+			vec3 point = _road.pointAtDistance(d) + Util::rotateVec3(vec3(-1, 0, 0),
+				glm::toMat4(_road.rotationAtDistance(d))) * xOffsets.sample(d);
 			_renderer.drawLine(last, point, vec4(1, 1, 1, 1));
 			last = point;
 		}
@@ -150,23 +154,13 @@ void Demo::toggleRunning() {
 }
 
 void Demo::buildMotionPath() {
-	averagePoints.clear();
-	float totalSharpness = 0;
+	xOffsets.clear();
 
-	for (float d = 0.0f; d < _road.length(); d += 2.0f) {
-		vec3 point = _road.pointAtDistance(d);
-		quat rot = _road.rotationAtDistance(d);
-		totalSharpness = 0;
-
-		for (int i = 0; i < numSamples; i++) {
-			float sampleDistance = d + (i * (sampleRange / numSamples)
-				- (sampleRange / 2)) + rangeOffset;
-			totalSharpness += _road.sharpnessAtDistance(sampleDistance);
-		}
-
-		averagePoints.emplace_back(point + Util::transformVec3(
-			(totalSharpness / numSamples) * 4.0f * vec3(1, 0, 0), glm::toMat4(rot)));
+	for (float d = 0.0f; d < _road.length(); d += 10.0f) {
+		xOffsets.addPoint(getOffsetAtDistance(d), 10.0f);
 	}
+
+	xOffsets.setLoopDistance(_road.length());
 }
 
 float Demo::getOffsetAtDistance(float d) {
