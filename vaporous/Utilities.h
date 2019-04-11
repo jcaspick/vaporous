@@ -78,5 +78,6 @@ namespace Util {
 		else if (a >= max) {
 			return a % max;
 		}
+		return a;
 	}
 }
