@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 #include "Road.h"
 #include "Context.h"
 
@@ -9,12 +10,14 @@ enum class SegmentType {
 	SharpCurve
 };
 
-class RoadGenerator {
+class LiveRoadGenerator {
 public:
-	RoadGenerator(Context* context);
-	void generate();
+	LiveRoadGenerator(Context* context);
+
+	void update(float dt);
+	void draw();
+	void start();
 	void reset();
-	bool hasRoad();
 	Road& getRoad();
 
 	float pStraight = 0.1875f;
@@ -38,17 +41,21 @@ private:
 	};
 
 private:
+	void step();
 	void updateSamples();
 	bool evaluateLoop();
 	SegmentType chooseSegmentType();
-	void getSegmentProperties(SegmentType type, 
+	void getSegmentProperties(SegmentType type,
 		float& angle, float& radius);
 
 	Context* _context;
+
 	Road _road;
 	std::vector<Iteration> _stack;
 
-	bool _hasRoad = false;
+	bool _generating = false;
+	float _elapsed = 0.0f;
+	float _stepInterval = 0.00f;
 
 	float _goalLength = 400.0f;
 	float _worldRadius = 150.0f;

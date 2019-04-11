@@ -53,8 +53,9 @@ Demo::Demo() :
 	_context.resourceMgr = &_resourceMgr;
 	_context.renderer = &_renderer;
 
-	_followCam.setScreenSize(_window->getSize());
-	_followCam.setFOV(75.0f);
+	// initialize entities
+	_mainCam.setScreenSize(_window->getSize());
+	_mainCam.setFOV(75.0f);
 	_car.init();
 
 	// subscribe to events
@@ -77,11 +78,14 @@ void Demo::init() {
 		"shaders/basic.vert", "shaders/basic_textured.frag");
 
 	// create camera
-	_cam = p_Camera(new OrbitCamera(&_context));
+	_debugCam = p_Camera(new OrbitCamera(&_context));
 
 	// initialize renderer
 	_renderer.init();
-	_renderer.setCamera(_cam.get());
+	_renderer.setCamera(&_mainCam);
+
+	// generate world
+	generateWorld();
 }
 
 void Demo::run() {
@@ -97,51 +101,50 @@ void Demo::run() {
 }
 
 void Demo::update(float dt) {
-	_cam->handleInput();
-	_roadGenerator.update(dt);
-
-	if (isRunning) {
+	if (_hasWorld) {
 		quat drift = glm::angleAxis(glm::radians(
-			Util::easeInCubic(_xOffsets.sample(carDistance))
-			* driftAngle), vec3(0, 1, 0));
+			Util::easeInCubic(_xOffsets.sample(_carDistance))
+			* _driftAngle), vec3(0, 1, 0));
 
-		_car.setPosition(pointOnMotionPath(carDistance));
-		_car.setRotation(rotOnMotionPath(carDistance
-			+ carRotationOffset) * drift);
+		_car.setPosition(pointOnMotionPath(_carDistance));
+		_car.setRotation(rotOnMotionPath(_carDistance
+			+ _carRotationOffset) * drift);
 
-		_followCam.setPosition(pointOnMotionPath(carDistance
-			- camFollowDistance) + vec3(0, camHeight, 0));
-		_followCam.setTarget(_car.getPosition());
+		_mainCam.setPosition(pointOnMotionPath(_carDistance
+			- _camFollowDistance) + vec3(0, _camHeight, 0));
+		_mainCam.setTarget(_car.getPosition() + _car.forward() * 2.0f);
 
-		carDistance += dt * carSpeed;
+		_carDistance += dt * _carSpeed;
+	}
+
+	if (_debugMode) {
+		_debugCam->handleInput();
 	}
 }
 
 void Demo::draw() {
 	_window->beginDraw();
 
-	_renderer.drawPoint(vec3(0), vec4(1, 1, 1, 0.2f), 10.0f);
-	_renderer.drawPoint(vec3(10, 0, 0), vec4(1, 0, 0, 1));
-	_renderer.drawPoint(vec3(0, 10, 0), vec4(0, 1, 0, 1));
-	_renderer.drawPoint(vec3(0, 0, 10), vec4(0, 0, 1, 1));
-
-	if (_drawMotionPath) drawMotionPath();
-
 	_resourceMgr.bindTexture(Textures::Rainbow);
 	_road.draw();
 	_resourceMgr.bindTexture(Textures::CarDiffuse);
 	_car.draw();
 
-	drawUI();
+	if (_debugMode) {
+		if (_drawMotionPath) drawMotionPath();
+		drawUI();
+	}
 
 	_window->endDraw();
 }
 
-void Demo::toggleRunning() {
-	isRunning = !isRunning;
-	carDistance = 0.0f;
-	if (isRunning) _renderer.setCamera(&_followCam);
-	else _renderer.setCamera(_cam.get());
+void Demo::generateWorld() {
+	_hasWorld = false;
+	do _roadGenerator.generate();
+	while (!_roadGenerator.hasRoad());
+	buildMotionPath();
+	_road.buildMesh();
+	_hasWorld = true;
 }
 
 void Demo::buildMotionPath() {
@@ -187,27 +190,19 @@ void Demo::handleEvent(EventType type, EventData data) {
 	case EventType::KeyDown:
 		if (data.intData == GLFW_KEY_ESCAPE)
 			_window->close();
-		if (data.intData == GLFW_KEY_S) {
-			_xOffsets.clear();
-			_roadGenerator.generate();
-		}
-		if (data.intData == GLFW_KEY_D) {
-			_roadGenerator.reset();
-		}
-		if (data.intData == GLFW_KEY_B) {
-			_road.buildMesh();
-		}
-		if (data.intData == GLFW_KEY_C) {
-			toggleRunning();
-		}
-		if (data.intData == GLFW_KEY_M) {
-			buildMotionPath();
+		if (data.intData == GLFW_KEY_R) {
+			generateWorld();
+			_carDistance = 0.0f;
 		}
 		if (data.intData == GLFW_KEY_0) {
-			_drawMotionPath = !_drawMotionPath;
+			toggleDebugMode();
 		}
 		break;
 	}
+}
+
+void Demo::toggleDebugMode() {
+	_debugMode = !_debugMode;
 }
 
 void Demo::drawMotionPath() {
@@ -237,13 +232,13 @@ void Demo::drawUI() {
 
 	ImGui::Begin("Debug");
 
-	ImGui::DragFloat("carSpeed", &carSpeed);
-	ImGui::DragFloat("carRotationOffset", &carRotationOffset);
+	ImGui::DragFloat("carSpeed", &_carSpeed);
+	ImGui::DragFloat("carRotationOffset", &_carRotationOffset);
 
 	ImGui::Separator();
 
-	ImGui::DragFloat("camFollowDistance", &camFollowDistance, 0.1f);
-	ImGui::DragFloat("camHeight", &camHeight, 0.1f);
+	ImGui::DragFloat("camFollowDistance", &_camFollowDistance, 0.1f);
+	ImGui::DragFloat("camHeight", &_camHeight, 0.1f);
 
 	ImGui::Separator();
 

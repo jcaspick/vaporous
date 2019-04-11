@@ -27,35 +27,37 @@ public:
 	virtual void handleEvent(EventType type, EventData data) override;
 
 private:
-	void toggleRunning();
+	void generateWorld();
 	void buildMotionPath();
-	float offsetAtDistance(float d);
-	vec3 pointOnMotionPath(float d);
-	quat rotOnMotionPath(float d);
 
+	// engine
 	Context _context;
 	GL _glContext;
 	p_Window _window;
 	ResourceManager _resourceMgr;
 	Renderer _renderer;
-	p_Camera _cam;
-	TargetCamera _followCam;
+	float _lastFrame;
 
+	// scene
+	p_Camera _debugCam;
+	TargetCamera _mainCam;
 	RoadGenerator _roadGenerator;
 	Road& _road;
 	Car _car;
+	bool _hasWorld = false;
 
-	float _lastFrame;
+	// entities
+	float _carDistance = 0.0f;
+	float _carSpeed = 20.0f;
+	float _carRotationOffset = 4.0f;
+	float _driftAngle = 90.0f;
+	float _camFollowDistance = 2.0f;
+	float _camHeight = 0.5f;
 
-	bool isRunning = false;
-	float carDistance = 0.0f;
-	float camFollowDistance = 2.0f;
-	float camHeight = 0.5f;
-
-	float carSpeed = 20.0f;
-	float carRotationOffset = 4.0f;
-	float driftAngle = 90.0f;
-
+	// motion path
+	float offsetAtDistance(float d);
+	vec3 pointOnMotionPath(float d);
+	quat rotOnMotionPath(float d);
 	LoopingSpline _xOffsets;
 	float _motionPathInterval = 10.0f;
 	float _sampleRange = 50.0f;
@@ -63,5 +65,8 @@ private:
 	int _numSamples = 50;
 	float _offsetStrength = 2.5f;
 
+	// debug
+	void toggleDebugMode();
+	bool _debugMode = false;
 	bool _drawMotionPath = false;
 };

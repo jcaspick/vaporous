@@ -135,6 +135,7 @@
     <ClCompile Include="include\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="include\imgui\imgui_widgets.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="LiveRoadGenerator.cpp" />
     <ClCompile Include="LoopingSpline.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="include\imgui\imstb_textedit.h" />
     <ClInclude Include="include\imgui\imstb_truetype.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="LiveRoadGenerator.h" />
     <ClInclude Include="LoopingSpline.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshUtilities.h" />

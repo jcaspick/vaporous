@@ -6,6 +6,7 @@
 
 class Road {
 	friend class RoadGenerator;
+	friend class LiveRoadGenerator;
 
 public:
 	Road(Context* context);
