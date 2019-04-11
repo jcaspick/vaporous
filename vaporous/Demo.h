@@ -13,6 +13,13 @@
 using p_Window = std::unique_ptr<Window>;
 using p_Camera = std::unique_ptr<OrbitCamera>;
 
+enum class State {
+	Begin,
+	FadeIn,
+	Running,
+	FadeOut,
+};
+
 class Demo : public Observer {
 public:
 	Demo();
@@ -38,13 +45,18 @@ private:
 	Renderer _renderer;
 	float _lastFrame;
 
-	// scene
+	// scene objects
 	p_Camera _debugCam;
 	TargetCamera _mainCam;
 	RoadGenerator _roadGenerator;
 	Road& _road;
 	Car _car;
+
+	// logic
+	void setState(State state);
+	float _elapsed = 0.0f;
 	bool _hasWorld = false;
+	State _state = State::Begin;
 
 	// entities
 	float _carDistance = 0.0f;
@@ -64,6 +76,9 @@ private:
 	float _rangeOffset = -15.0f;
 	int _numSamples = 50;
 	float _offsetStrength = 2.5f;
+
+	// rendering
+	float _fade = 1.0f;
 
 	// debug
 	void toggleDebugMode();

@@ -43,7 +43,7 @@ Demo::Demo() :
 
 	// initialize window (create viewport)
 	_window->init();
-	_window->setClearColor(vec4(0.1f, 0.1f, 0.1f, 1.0f));
+	_window->setClearColor(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
 	// connect systems
 	_context.gl = &_glContext;
@@ -84,8 +84,8 @@ void Demo::init() {
 	_renderer.init();
 	_renderer.setCamera(&_mainCam);
 
-	// generate world
-	generateWorld();
+	// draw blank frame
+	_renderer.endDraw(_fade);
 }
 
 void Demo::run() {
@@ -101,6 +101,8 @@ void Demo::run() {
 }
 
 void Demo::update(float dt) {
+	_elapsed += dt;
+
 	if (_hasWorld) {
 		quat drift = glm::angleAxis(glm::radians(
 			Util::easeInCubic(_xOffsets.sample(_carDistance))
@@ -120,15 +122,47 @@ void Demo::update(float dt) {
 	if (_debugMode) {
 		_debugCam->handleInput();
 	}
+
+	switch (_state) {
+	case State::Begin:
+		generateWorld();
+		setState(State::FadeIn);
+		break;
+	case State::FadeIn:
+		_fade = Util::lerp(1.0f, 0.0f, _elapsed / 1.0f);
+		if (_elapsed > 1.0f) {
+			_fade = 0.0f;
+			setState(State::Running);
+		}
+		break;
+	case State::FadeOut:
+		_fade = Util::lerp(0.0f, 1.0f, _elapsed / 0.5f);
+		if (_elapsed > 0.5f) {
+			_fade = 1.0f;
+			_carDistance = 0.0f;
+			setState(State::Begin);
+		}
+		break;
+	case State::Running:
+		break;
+	}
+}
+
+void Demo::setState(State state) {
+	_state = state;
+	_elapsed = 0.0f;
 }
 
 void Demo::draw() {
 	_window->beginDraw();
+	_renderer.beginDraw();
 
 	_resourceMgr.bindTexture(Textures::Rainbow);
 	_road.draw();
 	_resourceMgr.bindTexture(Textures::CarDiffuse);
 	_car.draw();
+
+	_renderer.endDraw(_fade);
 
 	if (_debugMode) {
 		if (_drawMotionPath) drawMotionPath();
@@ -191,8 +225,7 @@ void Demo::handleEvent(EventType type, EventData data) {
 		if (data.intData == GLFW_KEY_ESCAPE)
 			_window->close();
 		if (data.intData == GLFW_KEY_R) {
-			generateWorld();
-			_carDistance = 0.0f;
+			setState(State::FadeOut);
 		}
 		if (data.intData == GLFW_KEY_0) {
 			toggleDebugMode();
@@ -231,6 +264,10 @@ void Demo::drawUI() {
 	ImGui::NewFrame();
 
 	ImGui::Begin("Debug");
+
+	ImGui::DragFloat("screenFade", &_fade, 0.01f);
+
+	ImGui::Separator();
 
 	ImGui::DragFloat("carSpeed", &_carSpeed);
 	ImGui::DragFloat("carRotationOffset", &_carRotationOffset);

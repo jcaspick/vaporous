@@ -17,6 +17,9 @@ public:
 	Renderer(Context* context);
 	void init();
 	void setCamera(Camera* camera);
+
+	void beginDraw();
+	void endDraw(float fade);
 	void drawPoint(vec3 point, vec4 color, float size = 1.0f);
 	void drawLine(vec3 a, vec3 b, vec4 color);
 	void drawCircle(vec3 center, float radius, vec4 color);
@@ -24,18 +27,22 @@ public:
 	void drawAxis(Transformable* tform, float size = 1.0f);
 
 private:
+	void buildFramebuffers();
 	void createPointBuffer();
 	void createLineBuffer();
 	void createCircleBuffer();
+	void createScreenBuffer();
 
 	Context* _context;
-
 	Camera* _activeCamera;
 	Shader* _debugShader;
+	Shader* _screenShader;
 
+	GLuint _fbo, _colorBuffer, _depthBuffer;
 	GLuint _pointVbo, _pointVao;
 	GLuint _lineVbo, _lineVao;
 	GLuint _circleVbo, _circleVao;
+	GLuint _screenVbo, _screenVao;
 
 	int _circleResolution = 64;
 };

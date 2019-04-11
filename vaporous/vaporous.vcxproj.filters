@@ -241,5 +241,11 @@
     <None Include="shaders\basic_singleColor.frag">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="shaders\post_dither.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\screen.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

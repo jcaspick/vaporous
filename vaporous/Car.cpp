@@ -13,5 +13,4 @@ void Car::init() {
 void Car::draw() {
 	_context->renderer->drawMesh(_mesh, getModelMatrix(),
 		&_context->resourceMgr->getShader(Shaders::BasicTextured));
-	_context->renderer->drawAxis(this);
 }

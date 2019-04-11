@@ -13,15 +13,47 @@ void Renderer::init() {
 	// load shader
 	_debugShader = _context->resourceMgr->loadShader(Shaders::SingleColor,
 		"shaders/basic.vert", "shaders/basic_singleColor.frag");
+	_screenShader = _context->resourceMgr->loadShader(Shaders::Screen,
+		"shaders/screen.vert", "shaders/post_dither.frag");
+
+	// generate framebuffers
+	glGenFramebuffers(1, &_fbo);
+	glGenTextures(1, &_colorBuffer);
+	glGenRenderbuffers(1, &_depthBuffer);
+	buildFramebuffers();
 
 	// create buffers for debug drawing
 	createPointBuffer();
 	createLineBuffer();
 	createCircleBuffer();
+	createScreenBuffer();
 }
 
 void Renderer::setCamera(Camera* camera) {
 	_activeCamera = camera;
+}
+
+void Renderer::beginDraw() {
+	_context->gl->bindFBO(_fbo);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void Renderer::endDraw(float fade) {
+	_context->gl->bindFBO(0);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	_context->gl->setLineMode(false);
+	_context->gl->useShader(_screenShader->id);
+	_context->gl->bindVAO(_screenVao);
+	_context->gl->bindTexture0(_colorBuffer);
+
+	_screenShader->setInt("mainTex", 0);
+	_screenShader->setVec2("window", _context->window->getSize());
+	_screenShader->setFloat("fade", fade);
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 void Renderer::drawPoint(vec3 point, vec4 color, float size) {
@@ -115,6 +147,35 @@ void Renderer::drawMesh(Mesh& mesh, mat4 tform, Shader* shader) const {
 	glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
 }
 
+void Renderer::buildFramebuffers() {
+	vec2 window = _context->window->getSize();
+
+	// build color buffer
+	glBindTexture(GL_TEXTURE_2D, _colorBuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, window.x, window.y,
+		0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// build depth buffer
+	glBindRenderbuffer(GL_RENDERBUFFER, _depthBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 
+		window.x, window.y);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	// build framebuffer
+	glBindFramebuffer(GL_FRAMEBUFFER, _fbo);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 
+		GL_TEXTURE_2D, _colorBuffer, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+		GL_RENDERBUFFER, _depthBuffer);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "Error: framebuffer is incomplete" << std::endl;
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 void Renderer::createPointBuffer() {
 	float vertices[] = {
 		-1.0f,  0.0f,  0.0f,
@@ -177,4 +238,28 @@ void Renderer::createCircleBuffer() {
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
 		3 * sizeof(float), (void*)0);
+}
+
+void Renderer::createScreenBuffer() {
+	GLfloat vertices[] = {
+		-1.0f, -1.0f, 0.0f, 0.0f,
+		 1.0f, -1.0f, 1.0f, 0.0f,
+		 1.0f,  1.0f, 1.0f, 1.0f,
+
+		-1.0f, -1.0f, 0.0f, 0.0f,
+		 1.0f,  1.0f, 1.0f, 1.0f,
+		-1.0f,  1.0f, 0.0f, 1.0f
+	};
+
+	glGenVertexArrays(1, &_screenVao);
+	glGenBuffers(1, &_screenVbo);
+
+	glBindBuffer(GL_ARRAY_BUFFER, _screenVbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), 
+		vertices, GL_STATIC_DRAW);
+
+	glBindVertexArray(_screenVao);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 
+		4 * sizeof(GLfloat), (GLvoid*)0);
 }
