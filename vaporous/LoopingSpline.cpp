@@ -12,7 +12,7 @@ float LoopingSpline::sample(float distance) {
 	int i = static_cast<int>(floor(distance / _interval));
 
 	float p0 = _values[Util::wrapRangeInt(i - 1, 0, _values.size() - 1)];
-	float p1 = _values[i];
+	float p1 = _values[Util::wrapRangeInt(i, 0, _values.size() - 1)];
 	float p2 = _values[Util::wrapRangeInt(i + 1, 0, _values.size() - 1)];
 	float p3 = _values[Util::wrapRangeInt(i + 2, 0, _values.size() - 1)];
 
@@ -33,7 +33,7 @@ bool LoopingSpline::empty() {
 }
 
 float LoopingSpline::length() {
-	return _values.size() * _interval;
+	return (_values.size() - 1) * _interval;
 }
 
 void LoopingSpline::setInterval(float interval) {

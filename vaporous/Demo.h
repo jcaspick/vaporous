@@ -30,7 +30,8 @@ private:
 	void toggleRunning();
 	void buildMotionPath();
 	float offsetAtDistance(float d);
-	vec3 sampleMotionPath(float d);
+	vec3 pointOnMotionPath(float d);
+	quat rotOnMotionPath(float d);
 
 	Context _context;
 	GL _glContext;
@@ -53,11 +54,14 @@ private:
 
 	float carSpeed = 20.0f;
 	float carRotationOffset = 4.0f;
+	float driftAngle = 90.0f;
 
 	LoopingSpline _xOffsets;
 	float _motionPathInterval = 10.0f;
 	float _sampleRange = 50.0f;
 	float _rangeOffset = -15.0f;
 	int _numSamples = 50;
-	float _offsetStrength = 2.0f;
+	float _offsetStrength = 2.5f;
+
+	bool _drawMotionPath = false;
 };

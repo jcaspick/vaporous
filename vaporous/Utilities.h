@@ -65,7 +65,7 @@ namespace Util {
 		if (a < min) {
 			a += (max - min);
 		}
-		else if (a > max) {
+		else if (a >= max) {
 			a = fmod(a, max);
 		}
 		return a;
@@ -73,9 +73,9 @@ namespace Util {
 
 	inline int wrapRangeInt(int a, int min, int max) {
 		if (a < min) {
-			return a + (max - min) + 1;
+			return a + (max - min);
 		}
-		else if (a > max) {
+		else if (a >= max) {
 			return a % max;
 		}
 	}
