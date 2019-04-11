@@ -9,6 +9,7 @@ public:
 	void bindTexture1(GLuint id);
 	void bindTexture2(GLuint id);
 	void bindTexture3(GLuint id);
+	void bindCubemap0(GLuint id);
 	void bindVAO(GLuint id);
 	void bindFBO(GLuint id);
 	void setLineMode(bool lineMode);

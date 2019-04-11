@@ -52,3 +52,34 @@ bool Texture::loadFromFile(const std::string& path, bool alpha) {
 		return false;
 	}
 }
+
+bool Texture::loadAsCubemap(const std::string& path, GLuint face) {
+	int sourceWidth, sourceHeight, numChannels;
+	stbi_set_flip_vertically_on_load(0);
+	unsigned char* data = stbi_load(path.c_str(), &sourceWidth,
+		&sourceHeight, &numChannels, STBI_rgb);
+
+	if (data) {
+		width = sourceWidth;
+		height = sourceHeight;
+		imageFormat = GL_RGB;
+		internalFormat = GL_RGB;
+
+		glBindTexture(GL_TEXTURE_CUBE_MAP, id);
+		glTexImage2D(face, 0, internalFormat, width, height, 0,
+			imageFormat, GL_UNSIGNED_BYTE, data);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+		stbi_image_free(data);
+		return true;
+	}
+	else {
+		std::cout << "Error: failed to load cubemap texture " << path.c_str() << std::endl;
+		return false;
+	}
+}

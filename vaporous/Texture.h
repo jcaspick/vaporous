@@ -7,6 +7,7 @@ class Texture {
 public:
 	Texture();
 	bool loadFromFile(const std::string& path, bool alpha);
+	bool loadAsCubemap(const std::string& path, GLuint face);
 	void bind() const;
 
 	GLuint id;

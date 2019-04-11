@@ -32,17 +32,20 @@ private:
 	void createLineBuffer();
 	void createCircleBuffer();
 	void createScreenBuffer();
+	void createCubemap();
 
 	Context* _context;
 	Camera* _activeCamera;
 	Shader* _debugShader;
 	Shader* _screenShader;
+	Shader* _skyboxShader;
 
 	GLuint _fbo, _colorBuffer, _depthBuffer;
 	GLuint _pointVbo, _pointVao;
 	GLuint _lineVbo, _lineVao;
 	GLuint _circleVbo, _circleVao;
 	GLuint _screenVbo, _screenVao;
+	GLuint _skyboxVbo, _skyboxVao;
 
 	int _circleResolution = 64;
 };

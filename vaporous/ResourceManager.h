@@ -13,12 +13,14 @@ class ResourceManager {
 public:
 	ResourceManager(Context* context);
 	Texture* loadTexture(Textures id, const std::string& path, bool alpha);
+	Texture* loadCubemap(Textures id, const std::string& folder);
 	Shader* loadShader(Shaders id, const std::string& vert, const std::string& frag,
 		const std::string& geo = "");
 
 	Texture& getTexture(Textures id);
 	Shader& getShader(Shaders id);
 	void bindTexture(Textures id, GLuint slot = 0);
+	void bindCubemap(Textures id);
 	void bindShader(Shaders id);
 
 private:
