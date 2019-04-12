@@ -52,6 +52,7 @@ void Renderer::beginDraw() {
 
 	_context->resourceMgr->bindTexture(Textures::Sky, 1);
 	_skyShader->setInt("mainTex", 1);
+	_skyShader->setFloat("skyColor", fmod(glfwGetTime() * 0.05f, 1.0f));
 	_skyShader->setMat4("iview", glm::inverse(
 		_activeCamera->getViewMatrix()));
 	_skyShader->setMat4("iprojection", glm::inverse(

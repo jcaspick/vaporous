@@ -6,6 +6,7 @@ out vec4 fragColor;
 uniform sampler2D mainTex;
 uniform mat4 iview;
 uniform mat4 iprojection;
+uniform float skyColor;
 
 void main()
 {
@@ -15,6 +16,16 @@ void main()
 	eyeSpace = vec4(eyeSpace.xy, -1.0f, 0.0f);
 	vec3 worldRay = normalize((iview * eyeSpace).xyz);
 
-	fragColor = texture(mainTex, vec2(0.5f, worldRay.y * 3.0f))
+	fragColor = texture(mainTex, vec2(skyColor, worldRay.y * 3.0f))
 		* floor(worldRay.y + 1.0f);
+
+//	float c = uv.x * 6.283f;
+//	float minc = 0.0f;
+//	float maxc = 0.4f;
+//	fragColor = vec4(
+//		(sin(c) + 0.5f) * 0.5f * (maxc - minc) + minc,
+//		(sin(c + 1.5f) + 1.0f) * 0.5f * (maxc - minc) + minc,
+//		(sin(c + 2.5f) + 1.0f) * 0.5f * (maxc - minc) + minc,
+//		1.0f
+//	);
 }
