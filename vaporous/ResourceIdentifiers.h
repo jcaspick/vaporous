@@ -3,13 +3,11 @@
 enum class Textures {
 	YungFrink,
 	Rainbow,
-	CarDiffuse,
-	Sky
+	CarDiffuse
 };
 
 enum class Shaders {
 	BasicTextured,
 	SingleColor,
-	Screen,
-	Skybox
+	Screen
 };

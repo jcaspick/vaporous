@@ -15,8 +15,6 @@ void Renderer::init() {
 		"shaders/basic.vert", "shaders/basic_singleColor.frag");
 	_screenShader = _context->resourceMgr->loadShader(Shaders::Screen,
 		"shaders/screen.vert", "shaders/post_dither.frag");
-	_skyboxShader = _context->resourceMgr->loadShader(Shaders::Skybox,
-		"shaders/skybox.vert", "shaders/skybox.frag");
 
 	// generate framebuffers
 	glGenFramebuffers(1, &_fbo);
@@ -29,9 +27,6 @@ void Renderer::init() {
 	createLineBuffer();
 	createCircleBuffer();
 	createScreenBuffer();
-
-	// create cubemap for skybox
-	createCubemap();
 }
 
 void Renderer::setCamera(Camera* camera) {
@@ -40,22 +35,8 @@ void Renderer::setCamera(Camera* camera) {
 
 void Renderer::beginDraw() {
 	_context->gl->bindFBO(_fbo);
-	glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	_context->gl->setLineMode(false);
-	_context->resourceMgr->bindCubemap(Textures::Sky);
-	_context->gl->useShader(_skyboxShader->id);
-	_context->gl->bindVAO(_skyboxVao);
-
-	_skyboxShader->setMat4("view", glm::mat4(
-		glm::mat3(_activeCamera->getViewMatrix())));
-	_skyboxShader->setMat4("projection", _activeCamera->getProjectionMatrix());
-	_skyboxShader->setInt("cubemap", 0);
-
-	glDepthMask(GL_FALSE);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	glDepthMask(GL_TRUE);
 }
 
 void Renderer::endDraw(float fade) {
@@ -281,64 +262,4 @@ void Renderer::createScreenBuffer() {
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 
 		4 * sizeof(GLfloat), (GLvoid*)0);
-}
-
-void Renderer::createCubemap() {
-	_context->resourceMgr->loadCubemap(Textures::Sky, "resources/skyTest");
-
-	float skyboxVertices[] = {       
-		-1.0f,  1.0f, -1.0f,
-		-1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-
-		-1.0f, -1.0f,  1.0f,
-		-1.0f, -1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f,  1.0f,
-		-1.0f, -1.0f,  1.0f,
-
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-
-		-1.0f, -1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f, -1.0f,  1.0f,
-		-1.0f, -1.0f,  1.0f,
-
-		-1.0f,  1.0f, -1.0f,
-		 1.0f,  1.0f, -1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f, -1.0f,
-
-		-1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f,  1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f,  1.0f,
-		 1.0f, -1.0f,  1.0f
-	};
-
-	glGenVertexArrays(1, &_skyboxVao);
-	glGenBuffers(1, &_skyboxVbo);
-
-	glBindBuffer(GL_ARRAY_BUFFER, _skyboxVbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices),
-		skyboxVertices, GL_STATIC_DRAW);
-
-	glBindVertexArray(_skyboxVao);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
-		3 * sizeof(GLfloat), (GLvoid*)0);
 }
