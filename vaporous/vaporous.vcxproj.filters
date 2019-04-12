@@ -114,6 +114,9 @@
     <ClCompile Include="LiveRoadGenerator.cpp">
       <Filter>Demo</Filter>
     </ClCompile>
+    <ClCompile Include="City.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h">
@@ -230,6 +233,9 @@
     <ClInclude Include="LiveRoadGenerator.h">
       <Filter>Demo</Filter>
     </ClInclude>
+    <ClInclude Include="City.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\basic_textured.frag">
@@ -248,6 +254,9 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\gradient_sky.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\city_bg.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

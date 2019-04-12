@@ -17,6 +17,7 @@ public:
 	Renderer(Context* context);
 	void init();
 	void setCamera(Camera* camera);
+	Camera* getCamera();
 
 	void beginDraw();
 	void endDraw(float fade);

@@ -7,6 +7,7 @@
 #include "RoadGenerator.h"
 #include "Car.h"
 #include "LoopingSpline.h"
+#include "City.h"
 
 #include <memory>
 
@@ -51,6 +52,7 @@ private:
 	RoadGenerator _roadGenerator;
 	Road& _road;
 	Car _car;
+	City _city;
 
 	// logic
 	void setState(State state);

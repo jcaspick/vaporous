@@ -17,7 +17,8 @@ Demo::Demo() :
 	_renderer(&_context),
 	_roadGenerator(&_context),
 	_road(_roadGenerator.getRoad()),
-	_car(&_context)
+	_car(&_context),
+	_city(&_context)
 {
 	// initialize GLFW
 	glfwInit();
@@ -86,6 +87,9 @@ void Demo::init() {
 
 	// draw blank frame
 	_renderer.endDraw(_fade);
+
+	_city.init();
+	_city.generate();
 }
 
 void Demo::run() {
@@ -161,6 +165,8 @@ void Demo::draw() {
 	_road.draw();
 	_resourceMgr.bindTexture(Textures::CarDiffuse);
 	_car.draw();
+
+	_city.draw();
 
 	_renderer.endDraw(_fade);
 

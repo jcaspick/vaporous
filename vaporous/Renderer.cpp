@@ -39,6 +39,10 @@ void Renderer::setCamera(Camera* camera) {
 	_activeCamera = camera;
 }
 
+Camera* Renderer::getCamera() {
+	return _activeCamera;
+}
+
 void Renderer::beginDraw() {
 	// switch to framebuffer
 	_context->gl->bindFBO(_fbo);
