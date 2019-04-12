@@ -259,5 +259,11 @@
     <None Include="shaders\city_bg.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="shaders\city_building.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\city_building.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

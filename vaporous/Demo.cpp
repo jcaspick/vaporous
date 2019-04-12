@@ -273,7 +273,9 @@ void Demo::drawUI() {
 
 	ImGui::Begin("Debug");
 
-	ImGui::DragFloat("screenFade", &_fade, 0.01f);
+	ImGui::DragFloat("width", &_city.testWidth);
+	ImGui::DragFloat("height", &_city.testHeight);
+	ImGui::DragFloat("length", &_city.testLength);
 
 	ImGui::Separator();
 

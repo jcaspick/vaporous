@@ -7,10 +7,24 @@ City::City(Context* context) :
 
 void City::draw() {
 	Camera* cam = _context->renderer->getCamera();
+	_context->gl->setLineMode(false);
 
+	// draw city
+	_context->gl->useShader(_cityShader->id);
+	_context->gl->bindVAO(_cityVao);
+
+	_cityShader->setMat4("model", glm::translate(mat4(1), _center));
+	_cityShader->setMat4("view", cam->getViewMatrix());
+	_cityShader->setMat4("projection", cam->getProjectionMatrix());
+	_cityShader->setFloat("width", round(testWidth));
+	_cityShader->setFloat("height", round(testHeight));
+	_cityShader->setFloat("lngth", round(testLength));
+
+	glDrawArrays(GL_TRIANGLES, 0, 30);
+
+	// draw background
 	_context->gl->useShader(_bgShader->id);
 	_context->gl->bindVAO(_bgVao);
-	_context->gl->setLineMode(false);
 
 	_bgShader->setMat4("model", glm::translate(mat4(1), _center));
 	_bgShader->setMat4("view", cam->getViewMatrix());
@@ -23,11 +37,16 @@ void City::draw() {
 void City::init() {
 	_bgShader = _context->resourceMgr->loadShader(Shaders::CityBg,
 		"shaders/city_bg.vert", "shaders/basic_singleColor.frag");
+	_cityShader = _context->resourceMgr->loadShader(Shaders::City,
+		"shaders/city_building.vert", "shaders/city_building.frag");
 
 	glGenBuffers(1, &_bgData1);
 	glGenBuffers(1, &_bgData2);
+	glGenBuffers(1, &_cityData1);
+	glGenBuffers(1, &_cityData2);
 
 	createBgBuffer();
+	createCityBuffer();
 }
 
 void City::generate() {
@@ -97,4 +116,58 @@ void City::createBgBuffer() {
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 
 		(void*)(3* sizeof(float)));
+}
+
+void City::createCityBuffer() {
+	float vertices[] = {
+		// position           // uv        // x-facing flag
+		 0.5f,  0.0f, -0.5f,  0.0f, 0.0f,  0.0f,
+		-0.5f,  0.0f, -0.5f,  1.0f, 0.0f,  0.0f,
+		-0.5f,  1.0f, -0.5f,  1.0f, 1.0f,  0.0f,
+		 0.5f,  0.0f, -0.5f,  0.0f, 0.0f,  0.0f,
+		-0.5f,  1.0f, -0.5f,  1.0f, 1.0f,  0.0f,
+		 0.5f,  1.0f, -0.5f,  0.0f, 1.0f,  0.0f,
+
+		-0.5f,  0.0f, -0.5f,  1.0f, 0.0f,  1.0f,
+		-0.5f,  0.0f,  0.5f,  2.0f, 0.0f,  1.0f,
+		-0.5f,  1.0f,  0.5f,  2.0f, 1.0f,  1.0f,
+		-0.5f,  0.0f, -0.5f,  1.0f, 0.0f,  1.0f,
+		-0.5f,  1.0f,  0.5f,  2.0f, 1.0f,  1.0f,
+		-0.5f,  1.0f, -0.5f,  1.0f, 1.0f,  1.0f,
+
+		-0.5f,  0.0f,  0.5f,  2.0f, 0.0f,  0.0f,
+		 0.5f,  0.0f,  0.5f,  3.0f, 0.0f,  0.0f,
+		 0.5f,  1.0f,  0.5f,  3.0f, 1.0f,  0.0f,
+		-0.5f,  0.0f,  0.5f,  2.0f, 0.0f,  0.0f,
+		 0.5f,  1.0f,  0.5f,  3.0f, 1.0f,  0.0f,
+		-0.5f,  1.0f,  0.5f,  2.0f, 1.0f,  0.0f,
+
+		 0.5f,  0.0f,  0.5f,  3.0f, 0.0f,  1.0f,
+		 0.5f,  0.0f, -0.5f,  4.0f, 0.0f,  1.0f,
+		 0.5f,  1.0f, -0.5f,  4.0f, 1.0f,  1.0f,
+		 0.5f,  0.0f,  0.5f,  3.0f, 0.0f,  1.0f,
+		 0.5f,  1.0f, -0.5f,  4.0f, 1.0f,  1.0f,
+		 0.5f,  1.0f,  0.5f,  3.0f, 1.0f,  1.0f,
+
+		 0.5f,  1.0f, -0.5f,  0.0f, 0.0f,  0.0f,
+		-0.5f,  1.0f, -0.5f,  0.0f, 0.0f,  0.0f,
+		-0.5f,  1.0f,  0.5f,  0.0f, 0.0f,  0.0f,
+		 0.5f,  1.0f, -0.5f,  0.0f, 0.0f,  0.0f,
+		-0.5f,  1.0f,  0.5f,  0.0f, 0.0f,  0.0f,
+		 0.5f,  1.0f,  0.5f,  0.0f, 0.0f,  0.0f,
+	};
+
+	glGenVertexArrays(1, &_cityVao);
+	glGenBuffers(1, &_cityVbo);
+
+	glBindVertexArray(_cityVao);
+	glBindBuffer(GL_ARRAY_BUFFER, _cityVbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+		(void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+		(void*)(3 * sizeof(float)));
 }

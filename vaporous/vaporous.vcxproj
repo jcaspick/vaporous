@@ -197,6 +197,8 @@
     <None Include="shaders\basic.vert" />
     <None Include="shaders\basic_singleColor.frag" />
     <None Include="shaders\basic_textured.frag" />
+    <None Include="shaders\city_building.frag" />
+    <None Include="shaders\city_building.vert" />
     <None Include="shaders\gradient_sky.frag" />
     <None Include="shaders\city_bg.vert" />
     <None Include="shaders\post_dither.frag" />

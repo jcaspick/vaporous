@@ -12,5 +12,6 @@ enum class Shaders {
 	SingleColor,
 	Screen,
 	Sky,
-	CityBg
+	CityBg,
+	City
 };
