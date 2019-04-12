@@ -10,11 +10,17 @@ Renderer::Renderer(Context* context) :
 {}
 
 void Renderer::init() {
-	// load shader
+	// load shaders
 	_debugShader = _context->resourceMgr->loadShader(Shaders::SingleColor,
 		"shaders/basic.vert", "shaders/basic_singleColor.frag");
 	_screenShader = _context->resourceMgr->loadShader(Shaders::Screen,
 		"shaders/screen.vert", "shaders/post_dither.frag");
+	_skyShader = _context->resourceMgr->loadShader(Shaders::Sky,
+		"shaders/screen.vert", "shaders/gradient_sky.frag");
+
+	// load textures
+	_context->resourceMgr->loadTexture(Textures::Sky,
+		"resources/sky.png", false, false, true);
 
 	// generate framebuffers
 	glGenFramebuffers(1, &_fbo);
@@ -34,16 +40,35 @@ void Renderer::setCamera(Camera* camera) {
 }
 
 void Renderer::beginDraw() {
+	// switch to framebuffer
 	_context->gl->bindFBO(_fbo);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// draw sky
+	_context->gl->setLineMode(false);
+	_context->gl->useShader(_skyShader->id);
+	_context->gl->bindVAO(_screenVao);
+
+	_context->resourceMgr->bindTexture(Textures::Sky, 1);
+	_skyShader->setInt("mainTex", 1);
+	_skyShader->setMat4("iview", glm::inverse(
+		_activeCamera->getViewMatrix()));
+	_skyShader->setMat4("iprojection", glm::inverse(
+		_activeCamera->getProjectionMatrix()));
+
+	glDepthMask(GL_FALSE);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glDepthMask(GL_TRUE);
 }
 
 void Renderer::endDraw(float fade) {
+	// switch to main render target
 	_context->gl->bindFBO(0);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	// draw framebuffer to screen
 	_context->gl->setLineMode(false);
 	_context->gl->useShader(_screenShader->id);
 	_context->gl->bindVAO(_screenVao);

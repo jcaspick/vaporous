@@ -236,6 +236,8 @@ void Demo::handleEvent(EventType type, EventData data) {
 
 void Demo::toggleDebugMode() {
 	_debugMode = !_debugMode;
+	if (_debugMode) _renderer.setCamera(_debugCam.get());
+	else _renderer.setCamera(&_mainCam);
 }
 
 void Demo::drawMotionPath() {

@@ -6,7 +6,8 @@
 class Texture {
 public:
 	Texture();
-	bool loadFromFile(const std::string& path, bool alpha);
+	bool loadFromFile(const std::string& path, bool alpha, 
+		bool wrap = true, bool smooth = false);
 	void bind() const;
 
 	GLuint id;

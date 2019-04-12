@@ -37,6 +37,7 @@ private:
 	Camera* _activeCamera;
 	Shader* _debugShader;
 	Shader* _screenShader;
+	Shader* _skyShader;
 
 	GLuint _fbo, _colorBuffer, _depthBuffer;
 	GLuint _pointVbo, _pointVao;

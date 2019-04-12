@@ -8,9 +8,11 @@ ResourceManager::ResourceManager(Context* context) :
 	_context(context)
 {}
 
-Texture* ResourceManager::loadTexture(Textures id, const std::string& path, bool alpha) {
+Texture* ResourceManager::loadTexture(Textures id, const std::string& path, 
+	bool alpha, bool wrap, bool smooth) 
+{
 	std::unique_ptr<Texture> texture(new Texture());
-	if (!texture->loadFromFile(path, alpha))
+	if (!texture->loadFromFile(path, alpha, wrap, smooth))
 		throw std::runtime_error("ResourceManager failed to load texture " + path);
 	
 	_textures.insert(std::make_pair(id, std::move(texture)));

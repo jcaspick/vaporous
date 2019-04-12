@@ -22,9 +22,16 @@ void Texture::bind() const {
 	glBindTexture(GL_TEXTURE_2D, id);
 }
 
-bool Texture::loadFromFile(const std::string& path, bool alpha) {
+bool Texture::loadFromFile(const std::string& path, bool alpha, 
+	bool wrap, bool smooth) 
+{
 	int sourceWidth, sourceHeight, numChannels;
 	int mode = alpha ? STBI_rgb_alpha : STBI_rgb;
+	wrapS = wrap ? GL_REPEAT : GL_CLAMP_TO_EDGE;
+	wrapT = wrap ? GL_REPEAT : GL_CLAMP_TO_EDGE;
+	filterMin = smooth ? GL_LINEAR : GL_NEAREST;
+	filterMag = smooth ? GL_LINEAR : GL_NEAREST;
+
 	stbi_set_flip_vertically_on_load(1);
 	unsigned char* data = stbi_load(path.c_str(), &sourceWidth, 
 		&sourceHeight, &numChannels, mode);
@@ -39,7 +46,7 @@ bool Texture::loadFromFile(const std::string& path, bool alpha) {
 		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, 
 			imageFormat, GL_UNSIGNED_BYTE, data);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapS);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterMin);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterMag);
 		glBindTexture(GL_TEXTURE_2D, 0);

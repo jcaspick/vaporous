@@ -12,9 +12,10 @@ struct Context;
 class ResourceManager {
 public:
 	ResourceManager(Context* context);
-	Texture* loadTexture(Textures id, const std::string& path, bool alpha);
-	Shader* loadShader(Shaders id, const std::string& vert, const std::string& frag,
-		const std::string& geo = "");
+	Texture* loadTexture(Textures id, const std::string& path, 
+		bool alpha, bool wrap = true, bool smooth = false);
+	Shader* loadShader(Shaders id, const std::string& vert, 
+		const std::string& frag, const std::string& geo = "");
 
 	Texture& getTexture(Textures id);
 	Shader& getShader(Shaders id);
