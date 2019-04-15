@@ -157,7 +157,9 @@ void Renderer::drawAxis(Transformable* tform, float size) {
 		+ tform->forward() * size, vec4(0, 0, 1, 1));
 }
 
-void Renderer::drawMesh(Mesh& mesh, mat4 tform, Shader* shader) const {
+void Renderer::drawMesh(Mesh& mesh, mat4 tform, Shader* shader, 
+	float alpha) const 
+{
 	if (!_activeCamera) {
 		std::cout << "can't render, no camera set" << std::endl;
 		return;
@@ -172,6 +174,7 @@ void Renderer::drawMesh(Mesh& mesh, mat4 tform, Shader* shader) const {
 	shader->setMat4("model", tform);
 	shader->setMat4("view", _activeCamera->getViewMatrix());
 	shader->setMat4("projection", _activeCamera->getProjectionMatrix());
+	shader->setFloat("alpha", alpha);
 	shader->setInt("mainTex", 0);
 
 	glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);

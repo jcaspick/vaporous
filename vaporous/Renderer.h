@@ -24,7 +24,8 @@ public:
 	void drawPoint(vec3 point, vec4 color, float size = 1.0f);
 	void drawLine(vec3 a, vec3 b, vec4 color);
 	void drawCircle(vec3 center, float radius, vec4 color);
-	void drawMesh(Mesh& mesh, mat4 tform, Shader* shader) const;
+	void drawMesh(Mesh& mesh, mat4 tform, Shader* shader, 
+		float alpha = 1.0f) const;
 	void drawAxis(Transformable* tform, float size = 1.0f);
 
 private:

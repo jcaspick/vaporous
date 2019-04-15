@@ -32,7 +32,7 @@ void Road::draw() {
 	if (_mesh.vertices.size() == 0) return;
 
 	_context->renderer->drawMesh(_mesh, mat4(1),
-		&_context->resourceMgr->getShader(Shaders::BasicTextured));
+		&_context->resourceMgr->getShader(Shaders::BasicTextured), 0.75f);
 }
 
 void Road::buildMesh() {

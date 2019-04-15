@@ -161,10 +161,10 @@ void Demo::draw() {
 	_renderer.beginDraw();
 
 	_city.draw();
-	_resourceMgr.bindTexture(Textures::Rainbow);
-	_road.draw();
 	_resourceMgr.bindTexture(Textures::CarDiffuse);
 	_car.draw();
+	_resourceMgr.bindTexture(Textures::Rainbow);
+	_road.draw();
 
 	_renderer.endDraw(_fade);
 

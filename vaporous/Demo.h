@@ -64,7 +64,7 @@ private:
 	float _carDistance = 0.0f;
 	float _carSpeed = 20.0f;
 	float _carRotationOffset = 4.0f;
-	float _driftAngle = 90.0f;
+	float _driftAngle = 120.0f;
 	float _camFollowDistance = 2.0f;
 	float _camHeight = 0.5f;
 
