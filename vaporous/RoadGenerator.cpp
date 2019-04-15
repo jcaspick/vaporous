@@ -13,6 +13,11 @@ void RoadGenerator::reset() {
 	_samples.clear();
 	_furthestSample = 0.0f;
 	_hasRoad = false;
+
+	_minX = 0.0f;
+	_maxX = 0.0f;
+	_minZ = 0.0f;
+	_maxZ = 0.0f;
 }
 
 bool RoadGenerator::hasRoad() {
@@ -29,6 +34,11 @@ std::vector<vec3> RoadGenerator::getSamples() {
 		samples.emplace_back(sample.point);
 	}
 	return samples;
+}
+
+vec3 RoadGenerator::getRoadCenter() {
+	return vec3(Util::lerp(_minX, _maxX, 0.5f), 
+		0.0f, Util::lerp(_minZ, _maxZ, 0.5f));
 }
 
 void RoadGenerator::generate() {
@@ -140,6 +150,7 @@ void RoadGenerator::generate() {
 						// two segments are included in the intersection
 						// calculations of the city generator
 						updateSamples();
+						calculateExtents();
 					}
 					else {
 						_road.removeLastSegment();
@@ -190,6 +201,16 @@ void RoadGenerator::updateSamples() {
 			_samples.emplace_back(d, _road.pointAtDistance(d));
 			_furthestSample = d;
 		}
+	}
+}
+
+void RoadGenerator::calculateExtents() {
+	for (float d = 0.0f; d < _road.length(); d += _sampleInterval) {
+		vec3 p = _road.pointAtDistance(d);
+		_minX = std::min(_minX, p.x);
+		_maxX = std::max(_maxX, p.x);
+		_minZ = std::min(_minZ, p.z);
+		_maxZ = std::max(_maxZ, p.z);
 	}
 }
 

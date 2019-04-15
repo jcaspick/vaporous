@@ -6,6 +6,7 @@ public:
 	City(Context* context);
 	void draw();
 	void init();
+	void setCenter(vec3 center);
 	void generate(float worldSize, std::vector<vec3> samples);
 
 	float testWidth = 14.0f;

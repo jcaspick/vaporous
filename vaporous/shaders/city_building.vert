@@ -7,7 +7,7 @@ layout (location = 4) in vec4 _data2;
 out vec2 uv;
 out float xFacing;
 out vec3 size;
-out vec3 pos;
+out vec3 worldPos;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -32,7 +32,7 @@ void main()
 	vec3 rotated = vec3(cos(rotation) * scaled.x - sin(rotation) * scaled.z, 
 		scaled.y, sin(rotation) * scaled.x + cos(rotation) * scaled.z);
 
-	pos = rotated + offset;
+	worldPos = rotated + offset;
 
 	gl_Position = projection * view * model * vec4(rotated + offset, 1.0);
 }

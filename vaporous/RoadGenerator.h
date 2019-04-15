@@ -17,6 +17,7 @@ public:
 	bool hasRoad();
 	Road& getRoad();
 	std::vector<vec3> getSamples();
+	vec3 getRoadCenter();
 
 	float pStraight = 0.1875f;
 	float pShallow = 0.1875f;
@@ -41,6 +42,7 @@ private:
 
 private:
 	void updateSamples();
+	void calculateExtents();
 	bool evaluateLoop();
 	SegmentType chooseSegmentType();
 	void getSegmentProperties(SegmentType type, 
@@ -60,4 +62,6 @@ private:
 	float _sampleInterval = 4.0f;
 	float _furthestSample = 0;
 	float _minClearance = 3.0f;
+
+	float _minX, _maxX, _minZ, _maxZ;
 };

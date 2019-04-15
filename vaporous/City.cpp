@@ -14,7 +14,7 @@ void City::draw() {
 	_context->gl->bindVAO(_cityVao);
 	_context->resourceMgr->bindTexture(Textures::Noise, 3);
 
-	_cityShader->setMat4("model", glm::translate(mat4(1), _center));
+	_cityShader->setMat4("model", mat4(1));
 	_cityShader->setMat4("view", cam->getViewMatrix());
 	_cityShader->setMat4("projection", cam->getProjectionMatrix());
 	_cityShader->setInt("noise", 3);
@@ -50,6 +50,10 @@ void City::init() {
 	createCityBuffer();
 }
 
+void City::setCenter(vec3 center) {
+	_center = center;
+}
+
 void City::generate(float worldRadius, std::vector<vec3> samples) {
 	generateBg();
 	generateBuildings(worldRadius, samples);
@@ -64,7 +68,8 @@ void City::generateBuildings(float worldRadius, std::vector<vec3> samples) {
 		// select random position and rotation for building
 		float distance = Util::randomRange(0.0f, worldRadius);
 		float angle = glm::radians(Util::randomRange(0.0f, 360.0f));
-		vec3 position = vec3(sin(angle) * distance, -24.0f, cos(angle) * distance);
+		vec3 position = vec3(sin(angle) * distance, -24.0f, 
+			cos(angle) * distance) + _center;
 		float rotation = glm::radians(static_cast<int>(
 			Util::randomRange(0, 7)) * 22.5f);
 
