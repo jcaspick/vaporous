@@ -112,8 +112,37 @@ void City::generateBuildings(float worldRadius, std::vector<vec3> samples) {
 		}
 		if (intersection) continue;
 
-		_buildingTransforms.push_back(vec4(position, rotation));
-		_buildingSizes.push_back(vec4(size, 1.0f));
+		// construct the building
+		float capHeight = round(Util::randomRange(4, 9));
+		bool isTiered = size.y > 50.0f && Util::randomBool();
+		float minTierHeight = 16.0f;
+		float height = 0.0f;
+		float goalHeight = size.y - capHeight;
+		float sectionProportion = isTiered ? 
+			Util::randomRange(0.4f, 0.8f) : 1.0f;
+
+		while (height < (goalHeight * _buildingScale)) {
+			// create windowed section
+			float sectionHeight = round(sectionProportion
+				* (goalHeight - height));
+			if (sectionHeight < minTierHeight) {
+				sectionHeight = ceil(goalHeight - height);
+			}
+
+			vec3 sectionPos = vec3(position.x, height + _cityBottom, position.z);
+			vec3 sectionSize = vec3(size.x, sectionHeight, size.z);
+
+			_buildingTransforms.push_back(vec4(sectionPos, rotation));
+			_buildingSizes.push_back(vec4(sectionSize, goalHeight));
+			height += sectionHeight * _buildingScale;
+
+			// create windowless divider
+			sectionPos = vec3(position.x, height + _cityBottom, position.z);
+			sectionSize = vec3(size.x, capHeight, size.z);
+			_buildingTransforms.push_back(vec4(sectionPos, rotation));
+			_buildingSizes.push_back(vec4(sectionSize, 0.0f));
+			height += capHeight * _buildingScale;
+		}
 	}
 
 	// created instanced arrays of data

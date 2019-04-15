@@ -8,6 +8,7 @@ out vec2 uv;
 out float xFacing;
 out vec3 size;
 out vec3 worldPos;
+out float totalHeight;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -25,6 +26,7 @@ void main()
 	uv = vec2(_uv.x, _uv.y);
 	xFacing = _uv.z;
 	size = _data2.xyz;
+	totalHeight = _data2.w;
 
 	// transforming model space positions with size and rotation data
 	vec3 scaled = vec3(_pos.x * size.x * globalScale, 
