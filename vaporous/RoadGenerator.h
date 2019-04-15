@@ -16,11 +16,13 @@ public:
 	void reset();
 	bool hasRoad();
 	Road& getRoad();
+	std::vector<vec3> getSamples();
 
 	float pStraight = 0.1875f;
 	float pShallow = 0.1875f;
 	float pModerate = 0.5f;
 	float pSharp = 0.125f;
+	float _worldRadius = 150.0f;
 
 private:
 	struct Iteration {
@@ -51,7 +53,6 @@ private:
 	bool _hasRoad = false;
 
 	float _goalLength = 400.0f;
-	float _worldRadius = 150.0f;
 	float _deadZoneRadius = 50.0f;
 	int _maxAttemptsPerIter = 3;
 

@@ -89,7 +89,7 @@ void Demo::init() {
 	_renderer.endDraw(_fade);
 
 	_city.init();
-	_city.generate();
+	//_city.generate();
 }
 
 void Demo::run() {
@@ -182,6 +182,7 @@ void Demo::generateWorld() {
 	_hasWorld = false;
 	do _roadGenerator.generate();
 	while (!_roadGenerator.hasRoad());
+	_city.generate(_roadGenerator._worldRadius, _roadGenerator.getSamples());
 	buildMotionPath();
 	_road.buildMesh();
 	_hasWorld = true;
@@ -279,6 +280,7 @@ void Demo::drawUI() {
 	ImGui::DragFloat("hue", &_city.hueShift, 0.05f);
 	ImGui::DragFloat("offsetX", &_city.noiseOffsetX);
 	ImGui::DragFloat("offsetY", &_city.noiseOffsetY);
+	ImGui::DragFloat("rotation", &_city.rotation);
 
 	ImGui::Separator();
 

@@ -3,25 +3,30 @@ out vec4 fragColor;
 
 in vec2 uv;
 in float xFacing;
+in vec3 size;
+in vec3 worldPos;
 
 uniform sampler2D windowColor;
 uniform sampler2D noise;
-uniform float width;
-uniform float height;
-uniform float lngth;
-uniform float hueShift;
-uniform float noiseOffsetX;
-uniform float noiseOffsetY;
 
 void main()
 {
 	// width/height of the noise texture
 	float noiseRes = 256.0f;
 
+	// common world space y-position of all buildings
+	float cityBottom = -24.0f;
+
+	// using the size values to pick values for the noise offset
+	// and hue shift. Far from random, but random enough for this purpose
+	float noiseOffsetX = round(size.x);
+	float noiseOffsetY = round(size.y);
+	float hueShift = size.x * 0.01f + size.y * 0.07f;
+
 	// modulo over the area of the wall to determine if it is a window
-	float uvScale = mix(width, lngth, xFacing);
+	float uvScale = mix(size.x, size.z, xFacing);
 	int column = int(uv.x * (uvScale * 2) + 0.5f);
-	int row = int(uv.y * (height * 2) + 0.5f);
+	int row = int(uv.y * (size.y * 2) + 0.5f);
 	float isWindow = float(column % 2) * float(row % 2);
 
 	// a bit of math on the UV coordinates to sample a noise texture such that
@@ -29,7 +34,7 @@ void main()
 	vec2 noiseIndex = vec2(
 		0.125f * uv.x * (1.0f / noiseRes) * (uvScale * 2.0f)
 			+ ((row + noiseOffsetX) * 0.25f / noiseRes),
-		uv.y * (1.0f / noiseRes) * (height * 2.0f)
+		uv.y * (1.0f / noiseRes) * (size.y * 2.0f)
 			+ ((0.5f + noiseOffsetY) / noiseRes)
 	);
 	float isLit = max(floor(texture(noise, noiseIndex).r + 0.5f), 0.1f);
@@ -47,5 +52,7 @@ void main()
 		((sin(c + 3.0f) + 1.0f) * 0.5f) * 0.8f + 0.2f
 	);
 
-	fragColor = vec4(mix(bottomColor, topColor, uv.y) * isWindow * isLit, 1.0f);
+	// put everything together, plus a fade to black near the bottom
+	fragColor = vec4(mix(bottomColor, topColor, uv.y) * isWindow
+		* isLit * min((worldPos.y * 0.1f - cityBottom * 0.1f), 1.0f), 1.0f);
 }

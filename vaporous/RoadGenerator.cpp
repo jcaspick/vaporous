@@ -23,6 +23,14 @@ Road& RoadGenerator::getRoad() {
 	return _road;
 }
 
+std::vector<vec3> RoadGenerator::getSamples() {
+	std::vector<vec3> samples;
+	for (auto& sample : _samples) {
+		samples.emplace_back(sample.point);
+	}
+	return samples;
+}
+
 void RoadGenerator::generate() {
 	reset();
 	auto startTime = glfwGetTime();
