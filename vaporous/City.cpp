@@ -57,6 +57,7 @@ void City::generate(float worldRadius, std::vector<vec3> samples) {
 
 void City::generateBuildings(float worldRadius, std::vector<vec3> samples) {
 	_buildingTransforms.clear();
+	_buildingSizes.clear();
 
 	int numBuildings = static_cast<int>(worldRadius) * 2;
 	for (int i = 0; i < numBuildings; ++i) {
@@ -79,10 +80,10 @@ void City::generateBuildings(float worldRadius, std::vector<vec3> samples) {
 		for (auto& sample : samples) {
 			float distanceToRoad = glm::length(Util::flatten(sample)
 				- Util::flatten(position));
-			if (distanceToRoad < safeRadius + 4.0f) {
+			if (distanceToRoad < safeRadius) {
 				// intersecting buildings aren't removed, but have their height
 				// limited so they appear underneath the road
-				size.y = round(Util::randomRange(16, 24));
+				size.y = round(Util::randomRange(14, 18));
 				break;
 			}
 		}
@@ -92,7 +93,7 @@ void City::generateBuildings(float worldRadius, std::vector<vec3> samples) {
 		for (auto& transform : _buildingTransforms) {
 			float distanceToBuilding = glm::length(Util::flatten(position)
 				- Util::flatten(vec3(transform)));
-			if (distanceToBuilding < safeRadius * 1.5f) {
+			if (distanceToBuilding < safeRadius) {
 				intersection = true;
 				break;
 			}

@@ -136,6 +136,10 @@ void RoadGenerator::generate() {
 					// is acceptable before declaring the road complete
 					if (evaluateLoop()) {
 						finished = true;
+						// one last call to update samples so that the final
+						// two segments are included in the intersection
+						// calculations of the city generator
+						updateSamples();
 					}
 					else {
 						_road.removeLastSegment();
