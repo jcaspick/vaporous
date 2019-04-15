@@ -9,14 +9,13 @@ in float totalHeight;
 
 uniform sampler2D windowColor;
 uniform sampler2D noise;
+uniform float cityBottom;
+uniform float time;
 
 void main()
 {
 	// width/height of the noise texture
 	float noiseRes = 256.0f;
-
-	// common world space y-position of all buildings
-	float cityBottom = -24.0f;
 
 	// using the size values to pick values for the noise offset
 	// and hue shift, creates random looking variety, and has the
@@ -24,7 +23,8 @@ void main()
 	// have the same color
 	float noiseOffsetX = round(size.x);
 	float noiseOffsetY = round(size.y);
-	float hueShift = size.x * 0.01f + size.z * 0.07f;
+	float hueShift = size.x * 0.01f + size.z * 0.07f
+		+ time * 0.05f;
 
 	// modulo over the area of the wall to determine if it is a window
 	float uvScale = mix(size.x, size.z, xFacing);

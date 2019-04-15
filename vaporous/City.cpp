@@ -18,6 +18,9 @@ void City::draw() {
 	_cityShader->setMat4("view", cam->getViewMatrix());
 	_cityShader->setMat4("projection", cam->getProjectionMatrix());
 	_cityShader->setInt("noise", 3);
+	_cityShader->setFloat("globalScale", _buildingScale);
+	_cityShader->setFloat("cityBottom", _cityBottom);
+	_cityShader->setFloat("time", static_cast<float>(glfwGetTime()));
 
 	glDrawArraysInstanced(GL_TRIANGLES, 0, 30, _buildingTransforms.size());
 

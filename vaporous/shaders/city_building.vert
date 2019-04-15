@@ -13,11 +13,10 @@ out float totalHeight;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform float globalScale;
 
 void main()
 {
-	float globalScale = 0.57f; // from ruedehue
-
 	// parsed vertex attributes
 	vec3 offset = _data1.xyz;
 	float rotation = _data1.w;
