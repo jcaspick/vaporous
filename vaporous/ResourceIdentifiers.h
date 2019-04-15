@@ -4,7 +4,8 @@ enum class Textures {
 	YungFrink,
 	Rainbow,
 	CarDiffuse,
-	Sky
+	Sky,
+	Noise
 };
 
 enum class Shaders {

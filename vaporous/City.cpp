@@ -12,6 +12,7 @@ void City::draw() {
 	// draw city
 	_context->gl->useShader(_cityShader->id);
 	_context->gl->bindVAO(_cityVao);
+	_context->resourceMgr->bindTexture(Textures::Noise, 3);
 
 	_cityShader->setMat4("model", glm::translate(mat4(1), _center));
 	_cityShader->setMat4("view", cam->getViewMatrix());
@@ -19,6 +20,10 @@ void City::draw() {
 	_cityShader->setFloat("width", round(testWidth));
 	_cityShader->setFloat("height", round(testHeight));
 	_cityShader->setFloat("lngth", round(testLength));
+	_cityShader->setFloat("hueShift", hueShift);
+	_cityShader->setFloat("noiseOffsetX", noiseOffsetX);
+	_cityShader->setFloat("noiseOffsetY", noiseOffsetY);
+	_cityShader->setInt("noise", 3);
 
 	glDrawArrays(GL_TRIANGLES, 0, 30);
 
@@ -39,6 +44,8 @@ void City::init() {
 		"shaders/city_bg.vert", "shaders/basic_singleColor.frag");
 	_cityShader = _context->resourceMgr->loadShader(Shaders::City,
 		"shaders/city_building.vert", "shaders/city_building.frag");
+	_context->resourceMgr->loadTexture(Textures::Noise,
+		"resources/uniformNoise.png", false);
 
 	glGenBuffers(1, &_bgData1);
 	glGenBuffers(1, &_bgData2);

@@ -276,6 +276,9 @@ void Demo::drawUI() {
 	ImGui::DragFloat("width", &_city.testWidth);
 	ImGui::DragFloat("height", &_city.testHeight);
 	ImGui::DragFloat("length", &_city.testLength);
+	ImGui::DragFloat("hue", &_city.hueShift, 0.05f);
+	ImGui::DragFloat("offsetX", &_city.noiseOffsetX);
+	ImGui::DragFloat("offsetY", &_city.noiseOffsetY);
 
 	ImGui::Separator();
 

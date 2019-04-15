@@ -11,6 +11,9 @@ public:
 	float testWidth = 14.0f;
 	float testHeight = 24.0f;
 	float testLength = 9.0f;
+	float hueShift = 0.0f;
+	float noiseOffsetX = 0.0f;
+	float noiseOffsetY = 0.0f;
 
 private:
 	void createBgBuffer();
