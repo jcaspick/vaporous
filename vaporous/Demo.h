@@ -62,6 +62,7 @@ private:
 	// logic
 	void setState(State state);
 	float _elapsed = 0.0f;
+	float _maxStep = 1.0f / 60.0f;
 	bool _hasWorld = false;
 	State _state = State::Begin;
 

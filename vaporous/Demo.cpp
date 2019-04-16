@@ -98,8 +98,8 @@ void Demo::run() {
 		float currentFrame = static_cast<float>(glfwGetTime());
 		float deltaTime = currentFrame - _lastFrame;
 		_lastFrame = currentFrame;
+		update(std::min(_maxStep, deltaTime));
 
-		update(deltaTime);
 		draw();
 		glfwPollEvents();
 	}
