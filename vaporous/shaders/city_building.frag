@@ -6,6 +6,8 @@ in float xFacing;
 in vec3 size;
 in vec3 worldPos;
 in float totalHeight;
+in float percentLit;
+in float hueShift;
 
 uniform sampler2D windowColor;
 uniform sampler2D noise;
@@ -23,8 +25,6 @@ void main()
 	// have the same color
 	float noiseOffsetX = round(size.x);
 	float noiseOffsetY = round(size.y);
-	float hueShift = size.x * 0.01f + size.z * 0.07f
-		+ time * 0.05f;
 
 	// modulo over the area of the wall to determine if it is a window
 	float uvScale = mix(size.x, size.z, xFacing);
@@ -41,7 +41,7 @@ void main()
 		uv.y * (1.0f / noiseRes) * (size.y * 2.0f)
 			+ ((0.5f + noiseOffsetY) / noiseRes)
 	);
-	float isLit = max(floor(texture(noise, noiseIndex).r + 0.5f), 0.1f);
+	float isLit = max(floor(texture(noise, noiseIndex).r + percentLit), 0.1f);
 
 	// create window color gradient based on hue shift value
 	float c = 6.283f * hueShift;

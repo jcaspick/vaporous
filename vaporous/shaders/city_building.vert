@@ -3,12 +3,15 @@ layout (location = 0) in vec3 _pos;
 layout (location = 1) in vec3 _uv;
 layout (location = 3) in vec4 _data1;
 layout (location = 4) in vec4 _data2;
+layout (location = 5) in vec2 _data3;
 
 out vec2 uv;
 out float xFacing;
 out vec3 size;
 out vec3 worldPos;
 out float totalHeight;
+out float percentLit;
+out float hueShift;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -26,6 +29,8 @@ void main()
 	xFacing = _uv.z;
 	size = _data2.xyz;
 	totalHeight = _data2.w;
+	hueShift = _data3.x;
+	percentLit = _data3.y;
 
 	// transforming model space positions with size and rotation data
 	vec3 scaled = vec3(_pos.x * size.x * globalScale, 

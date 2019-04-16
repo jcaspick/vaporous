@@ -32,9 +32,11 @@ private:
 	std::vector<vec2> _bgSizes;
 	std::vector<vec4> _buildingTransforms;
 	std::vector<vec4> _buildingSizes;
+	std::vector<vec2> _buildingAppearances;
 	float _buildingScale = 0.57f;
 	float _cityBottom = -24.0f;
 
 	GLuint _bgVbo, _bgVao, _bgData1, _bgData2;
-	GLuint _cityVbo, _cityVao, _cityData1, _cityData2;
+	GLuint _cityVbo, _cityVao;
+	GLuint _cityData1, _cityData2, _cityData3;
 };

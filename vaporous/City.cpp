@@ -48,6 +48,7 @@ void City::init() {
 	glGenBuffers(1, &_bgData2);
 	glGenBuffers(1, &_cityData1);
 	glGenBuffers(1, &_cityData2);
+	glGenBuffers(1, &_cityData3);
 
 	createBgBuffer();
 	createCityBuffer();
@@ -65,6 +66,7 @@ void City::generate(float worldRadius, std::vector<vec3> samples) {
 void City::generateBuildings(float worldRadius, std::vector<vec3> samples) {
 	_buildingTransforms.clear();
 	_buildingSizes.clear();
+	_buildingAppearances.clear();
 
 	int numBuildings = static_cast<int>(worldRadius) * 2;
 	for (int i = 0; i < numBuildings; ++i) {
@@ -83,6 +85,11 @@ void City::generateBuildings(float worldRadius, std::vector<vec3> samples) {
 			round(Util::randomRange(9, 16)));
 		float safeRadius = glm::length(vec2(_buildingScale * size.x / 2,
 			_buildingScale * size.y / 2));
+
+		// select random values for hue shift and percent windows lit
+		vec2 appearance = vec2(
+			Util::randomRange(0.0f, 1.0f),
+			Util::randomRange(0.25f, 0.6f));
 
 		// check for intersections with road
 		for (auto& sample : samples) {
@@ -119,31 +126,50 @@ void City::generateBuildings(float worldRadius, std::vector<vec3> samples) {
 		float capHeight = round(Util::randomRange(4, 9));
 		bool isTiered = size.y > 50.0f && Util::randomBool();
 		float minTierHeight = 16.0f;
+		float minTierWidth = std::max(8.0f, round(size.x / 2));
+		float minTierLength = std::max(8.0f, round(size.z / 2));
 		float height = 0.0f;
 		float goalHeight = size.y - capHeight;
 		float sectionProportion = isTiered ? 
 			Util::randomRange(0.4f, 0.8f) : 1.0f;
+		vec3 sectionSize = vec3(size.x, 0.0f, size.z);
 
 		while (height < (goalHeight * _buildingScale)) {
-			// create windowed section
-			float sectionHeight = round(sectionProportion
-				* (goalHeight - height));
-			if (sectionHeight < minTierHeight) {
-				sectionHeight = ceil(goalHeight - height);
+			// decide height of new section
+			sectionSize.y = round(sectionProportion * (goalHeight - height));
+			if (sectionSize.y < minTierHeight && 
+				Util::randomRange(0.0f, 1.0f) > 0.2f) 
+			{
+				sectionSize.y = ceil(goalHeight - height);
 			}
 
-			vec3 sectionPos = vec3(position.x, height + _cityBottom, position.z);
-			vec3 sectionSize = vec3(size.x, sectionHeight, size.z);
+			// decide width/length of new section
+			// there is a random chance for each tier of a tiered
+			// building to be scaled down in one dimension
+			if (Util::randomBool() && height > 0.0f) {
+				sectionSize.x = round(std::max(sectionSize.x * 0.5f, minTierWidth));
+			}
+			else if (height > 0.0f) {
+				sectionSize.z = round(std::max(sectionSize.z * 0.5f, minTierLength));
+			}
+			float offsetX = (size.x - sectionSize.x) * 0.5f * _buildingScale;
+			float offsetZ = (size.z - sectionSize.z) * 0.5f * _buildingScale;
+
+			vec3 sectionPos = vec3(position.x + cos(rotation) * offsetX
+				- sin(rotation) * offsetZ, height + _cityBottom, 
+				position.z + cos(rotation) * offsetZ + sin(rotation) * offsetX);
 
 			_buildingTransforms.push_back(vec4(sectionPos, rotation));
 			_buildingSizes.push_back(vec4(sectionSize, goalHeight));
-			height += sectionHeight * _buildingScale;
+			_buildingAppearances.push_back(appearance);
+			height += sectionSize.y * _buildingScale;
 
 			// create windowless divider
-			sectionPos = vec3(position.x, height + _cityBottom, position.z);
-			sectionSize = vec3(size.x, capHeight, size.z);
+			sectionPos.y = height + _cityBottom;
+			sectionSize.y = capHeight;
 			_buildingTransforms.push_back(vec4(sectionPos, rotation));
 			_buildingSizes.push_back(vec4(sectionSize, 0.0f));
+			_buildingAppearances.push_back(appearance);
 			height += capHeight * _buildingScale;
 		}
 	}
@@ -166,6 +192,14 @@ void City::generateBuildings(float worldRadius, std::vector<vec3> samples) {
 	glEnableVertexAttribArray(4);
 	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(vec4), (void*)0);
 	glVertexAttribDivisor(4, 1);
+
+	// appearance
+	glBindBuffer(GL_ARRAY_BUFFER, _cityData3);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vec2) * _buildingAppearances.size(),
+		&_buildingAppearances[0], GL_STATIC_DRAW);
+	glEnableVertexAttribArray(5);
+	glVertexAttribPointer(5, 2, GL_FLOAT, GL_FALSE, sizeof(vec2), (void*)0);
+	glVertexAttribDivisor(5, 1);
 
 	glBindVertexArray(0);
 }
