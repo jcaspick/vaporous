@@ -117,6 +117,9 @@
     <ClCompile Include="City.cpp">
       <Filter>Demo</Filter>
     </ClCompile>
+    <ClCompile Include="CameraMovements.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h">
@@ -234,6 +237,9 @@
       <Filter>Demo</Filter>
     </ClInclude>
     <ClInclude Include="City.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraMovements.h">
       <Filter>Demo</Filter>
     </ClInclude>
   </ItemGroup>

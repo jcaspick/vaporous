@@ -57,6 +57,7 @@ Demo::Demo() :
 	// initialize entities
 	_mainCam.setScreenSize(_window->getSize());
 	_mainCam.setFOV(75.0f);
+	getNextCameraMovement();
 	_car.init();
 
 	// subscribe to events
@@ -115,9 +116,11 @@ void Demo::update(float dt) {
 		_car.setRotation(rotOnMotionPath(_carDistance
 			+ _carRotationOffset) * drift);
 
+		if (!_camMove->update(dt)) getNextCameraMovement();
 		_mainCam.setPosition(pointOnMotionPath(_carDistance
-			- _camFollowDistance) + vec3(0, _camHeight, 0));
-		_mainCam.setTarget(_car.getPosition() + _car.forward() * 2.0f);
+			- _camMove->camDistance()) + _camMove->camOffset());
+		_mainCam.setTarget(pointOnMotionPath(_carDistance
+			+ _camMove->targetDistance()));
 
 		_carDistance += dt * _carSpeed;
 	}
@@ -201,6 +204,16 @@ void Demo::buildMotionPath() {
 	_xOffsets.addValue(offsetAtDistance(0.0f));
 }
 
+void Demo::getNextCameraMovement() {
+	_camMove.reset();
+	float r = Util::randomRange(0.0f, 1.0f);
+	if (r < 0.2f) _camMove = p_CamMovement(new Cam_Chase());
+	else if (r < 0.4f) _camMove = p_CamMovement(new Cam_Overhead());
+	else if (r < 0.6f) _camMove = p_CamMovement(new Cam_ReverseChase());
+	else if (r < 0.8f) _camMove = p_CamMovement(new Cam_Rotating());
+	else _camMove = p_CamMovement(new Cam_Whoosh());
+}
+
 float Demo::offsetAtDistance(float d) {
 	float total = 0;
 	for (int i = 0; i < _numSamples; i++) {
@@ -242,8 +255,6 @@ void Demo::handleEvent(EventType type, EventData data) {
 
 void Demo::toggleDebugMode() {
 	_debugMode = !_debugMode;
-	if (_debugMode) _renderer.setCamera(_debugCam.get());
-	else _renderer.setCamera(&_mainCam);
 }
 
 void Demo::drawMotionPath() {
@@ -278,8 +289,12 @@ void Demo::drawUI() {
 
 	ImGui::Separator();
 
-	ImGui::DragFloat("camFollowDistance", &_camFollowDistance, 0.1f);
-	ImGui::DragFloat("camHeight", &_camHeight, 0.1f);
+	ImGui::DragFloat("camDistance", &_camMove->_camDistance, 0.1f);
+	ImGui::DragFloat("targetDistance", &_camMove->_targetDistance, 0.1f);
+	ImGui::DragFloat("camHeight", &_camMove->_camHeight, 0.1f);
+	ImGui::DragFloat("rotationRadius", &_camMove->_rotationRadius);
+	ImGui::DragFloat("rotationSpeed", &_camMove->_rotationSpeed);
+	ImGui::Checkbox("use rotation", &_camMove->_useRotation);
 
 	ImGui::Separator();
 

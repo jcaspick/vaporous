@@ -8,11 +8,13 @@
 #include "Car.h"
 #include "LoopingSpline.h"
 #include "City.h"
+#include "CameraMovements.h"
 
 #include <memory>
 
 using p_Window = std::unique_ptr<Window>;
 using p_Camera = std::unique_ptr<OrbitCamera>;
+using p_CamMovement = std::unique_ptr<CameraMovement>;
 
 enum class State {
 	Begin,
@@ -37,6 +39,7 @@ public:
 private:
 	void generateWorld();
 	void buildMotionPath();
+	void getNextCameraMovement();
 
 	// engine
 	Context _context;
@@ -65,8 +68,7 @@ private:
 	float _carSpeed = 20.0f;
 	float _carRotationOffset = 4.0f;
 	float _driftAngle = 120.0f;
-	float _camFollowDistance = 2.0f;
-	float _camHeight = 0.5f;
+	p_CamMovement _camMove;
 
 	// motion path
 	float offsetAtDistance(float d);
