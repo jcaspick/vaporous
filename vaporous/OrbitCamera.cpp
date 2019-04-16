@@ -14,6 +14,10 @@ OrbitCamera::~OrbitCamera() {
 	_context->eventMgr->unsubscribe(EventType::MouseUp, this);
 }
 
+void OrbitCamera::setPosition(vec3 position) {
+	_position = position;
+}
+
 mat4 OrbitCamera::getViewMatrix() {
 	mat4 rotation = glm::rotate(mat4(1), glm::radians(_azimuth), vec3(0, 1, 0));
 	rotation = glm::rotate(rotation, glm::radians(_altitude), vec3(1, 0, 0));

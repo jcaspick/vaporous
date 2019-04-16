@@ -12,6 +12,7 @@ public:
 	virtual mat4 getProjectionMatrix() override;
 	void handleInput();
 	virtual void handleEvent(EventType type, EventData data) override;
+	void setPosition(vec3 position);
 
 private:
 	Context* _context;

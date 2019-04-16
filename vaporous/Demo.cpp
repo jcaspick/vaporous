@@ -189,6 +189,7 @@ void Demo::generateWorld() {
 	_city.generate(_generatorSettings.worldRadius, _roadGenerator.getSamples());
 	buildMotionPath();
 	_road.buildMesh();
+	_debugCam->setPosition(_roadGenerator.getRoadCenter());
 	_hasWorld = true;
 }
 
