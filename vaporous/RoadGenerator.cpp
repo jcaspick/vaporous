@@ -41,12 +41,16 @@ vec3 RoadGenerator::getRoadCenter() {
 		0.0f, Util::lerp(_minZ, _maxZ, 0.5f));
 }
 
+void RoadGenerator::setRoadSettings(RoadSettings settings) {
+	_settings = settings;
+}
+
 void RoadGenerator::generate() {
 	reset();
 	auto startTime = glfwGetTime();
 
 	// initialize heightmap
-	_road.initializeHeightmap(_goalLength * 2, 45.0f, 10.0f);
+	_road.initializeHeightmap(_settings.goalLength * 2, 45.0f, 10.0f);
 
 	// add straight section as starting piece
 	_road.addSegment(2, 1000, Orientation::Left);
@@ -96,7 +100,7 @@ void RoadGenerator::generate() {
 		RoadSegment segment = _road._road.back();
 
 		// if the road goes outside the world boundary the segment is invalid
-		if (glm::length(segment.endPoint()) > _worldRadius) {
+		if (glm::length(segment.endPoint()) > _settings.worldRadius) {
 			iteration.isValid = false;
 		}
 
@@ -126,7 +130,7 @@ void RoadGenerator::generate() {
 		if (iteration.isValid) {
 			// if the goal length has been reached and the new segment does not
 			// lead back towards the origin it is invalid
-			if (_road.length() > _goalLength) {
+			if (_road.length() > _settings.goalLength) {
 				RoadSegment previous = _road._road.at(_road._road.size() - 2);
 				if (distanceFromOrigin >= glm::length(previous.endPoint())) {
 					iteration.isValid = false;
@@ -138,7 +142,7 @@ void RoadGenerator::generate() {
 			// if the new segment passes close to the origin of the road...
 			if (distanceFromOrigin <= _deadZoneRadius) {
 				// if the goal length has been reached, complete the track
-				if (_road.length() > _goalLength && iteration.isValid) {
+				if (_road.length() > _settings.goalLength && iteration.isValid) {
 					_road.closeLoop();
 					_road._heightMap.setLoopDistance(_road.length());
 					// the biarc solver somtimes comes up with ugly solutions
@@ -246,11 +250,11 @@ bool RoadGenerator::evaluateLoop() {
 
 SegmentType RoadGenerator::chooseSegmentType() {
 	float r = Util::randomRange(0.0f, 1.0f);
-	if (r < pStraight) return SegmentType::Straight;
-	else r -= pStraight;
-	if (r < pShallow) return SegmentType::ShallowCurve;
-	else r -= pShallow;
-	if (r < pModerate) return SegmentType::ModerateCurve;
+	if (r < _settings.pStraight) return SegmentType::Straight;
+	else r -= _settings.pStraight;
+	if (r < _settings.pShallow) return SegmentType::ShallowCurve;
+	else r -= _settings.pShallow;
+	if (r < _settings.pModerate) return SegmentType::ModerateCurve;
 	else return SegmentType::SharpCurve;
 }
 

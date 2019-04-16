@@ -58,6 +58,7 @@ Demo::Demo() :
 	_mainCam.setScreenSize(_window->getSize());
 	_mainCam.setFOV(75.0f);
 	getNextCameraMovement();
+	getNextRoadSettings();
 	_car.init();
 
 	// subscribe to events
@@ -181,10 +182,11 @@ void Demo::draw() {
 
 void Demo::generateWorld() {
 	_hasWorld = false;
+	_roadGenerator.setRoadSettings(_generatorSettings);
 	do _roadGenerator.generate();
 	while (!_roadGenerator.hasRoad());
 	_city.setCenter(_roadGenerator.getRoadCenter());
-	_city.generate(_roadGenerator._worldRadius, _roadGenerator.getSamples());
+	_city.generate(_generatorSettings.worldRadius, _roadGenerator.getSamples());
 	buildMotionPath();
 	_road.buildMesh();
 	_hasWorld = true;
@@ -212,6 +214,37 @@ void Demo::getNextCameraMovement() {
 	else if (r < 0.6f) _camMove = p_CamMovement(new Cam_ReverseChase());
 	else if (r < 0.8f) _camMove = p_CamMovement(new Cam_Rotating());
 	else _camMove = p_CamMovement(new Cam_Whoosh());
+}
+
+void Demo::getNextRoadSettings() {
+	float r = Util::randomRange(0.0f, 1.0f);
+	// simple circuit
+	if (r < 0.33f) {
+		_generatorSettings.goalLength = 400.0f;
+		_generatorSettings.worldRadius = 150.0f;
+		_generatorSettings.pStraight = 0.1875f;
+		_generatorSettings.pShallow = 0.1875f;
+		_generatorSettings.pModerate = 0.5f;
+		_generatorSettings.pSharp = 0.125f;
+	}
+	// extra loopy
+	else if (r < 0.66f) {
+		_generatorSettings.goalLength = 750.0f;
+		_generatorSettings.worldRadius = 200.0f;
+		_generatorSettings.pStraight = 0.0;
+		_generatorSettings.pShallow = 0.22f;
+		_generatorSettings.pModerate = 0.78f;
+		_generatorSettings.pSharp = 0.0f;
+	}
+	// long and leisurely
+	else {
+		_generatorSettings.goalLength = 850.0f;
+		_generatorSettings.worldRadius = 300.0f;
+		_generatorSettings.pStraight = 0.430f;
+		_generatorSettings.pShallow = 0.5f;
+		_generatorSettings.pModerate = 0.07f;
+		_generatorSettings.pSharp = 0.0f;
+	}
 }
 
 float Demo::offsetAtDistance(float d) {
@@ -244,6 +277,7 @@ void Demo::handleEvent(EventType type, EventData data) {
 		if (data.intData == GLFW_KEY_ESCAPE)
 			_window->close();
 		if (data.intData == GLFW_KEY_R) {
+			getNextRoadSettings();
 			setState(State::FadeOut);
 		}
 		if (data.intData == GLFW_KEY_0) {
@@ -255,6 +289,8 @@ void Demo::handleEvent(EventType type, EventData data) {
 
 void Demo::toggleDebugMode() {
 	_debugMode = !_debugMode;
+	if (_debugMode) _renderer.setCamera(_debugCam.get());
+	else _renderer.setCamera(&_mainCam);
 }
 
 void Demo::drawMotionPath() {
@@ -284,6 +320,19 @@ void Demo::drawUI() {
 
 	ImGui::Begin("Debug");
 
+	ImGui::DragFloat("road length", &_generatorSettings.goalLength);
+	ImGui::DragFloat("world radius", &_generatorSettings.worldRadius);
+	if (ImGui::SliderFloat("straight", &_generatorSettings.pStraight, 0.0f, 1.0f))
+		normalizeRoadSettings();
+	if (ImGui::SliderFloat("shallow", &_generatorSettings.pShallow, 0.0f, 1.0f))
+		normalizeRoadSettings();
+	if (ImGui::SliderFloat("moderate", &_generatorSettings.pModerate, 0.0f, 1.0f))
+		normalizeRoadSettings();
+	if (ImGui::SliderFloat("sharp", &_generatorSettings.pSharp, 0.0f, 1.0f))
+		normalizeRoadSettings();
+
+	ImGui::Separator();
+
 	ImGui::DragFloat("carSpeed", &_carSpeed);
 	ImGui::DragFloat("carRotationOffset", &_carRotationOffset);
 
@@ -307,4 +356,13 @@ void Demo::drawUI() {
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void Demo::normalizeRoadSettings() {
+	float total = _generatorSettings.pStraight + _generatorSettings.pShallow
+		+ _generatorSettings.pModerate + _generatorSettings.pSharp;
+	_generatorSettings.pStraight /= total;
+	_generatorSettings.pShallow /= total;
+	_generatorSettings.pModerate /= total;
+	_generatorSettings.pSharp /= total;
 }

@@ -40,6 +40,8 @@ private:
 	void generateWorld();
 	void buildMotionPath();
 	void getNextCameraMovement();
+	void getNextRoadSettings();
+	void normalizeRoadSettings();
 
 	// engine
 	Context _context;
@@ -69,6 +71,7 @@ private:
 	float _carRotationOffset = 4.0f;
 	float _driftAngle = 120.0f;
 	p_CamMovement _camMove;
+	RoadSettings _generatorSettings;
 
 	// motion path
 	float offsetAtDistance(float d);

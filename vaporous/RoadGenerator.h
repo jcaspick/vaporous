@@ -9,6 +9,17 @@ enum class SegmentType {
 	SharpCurve
 };
 
+struct RoadSettings {
+	RoadSettings() {};
+
+	float goalLength;
+	float worldRadius;
+	float pStraight;
+	float pShallow;
+	float pModerate;
+	float pSharp;
+};
+
 class RoadGenerator {
 public:
 	RoadGenerator(Context* context);
@@ -18,12 +29,7 @@ public:
 	Road& getRoad();
 	std::vector<vec3> getSamples();
 	vec3 getRoadCenter();
-
-	float pStraight = 0.1875f;
-	float pShallow = 0.1875f;
-	float pModerate = 0.5f;
-	float pSharp = 0.125f;
-	float _worldRadius = 150.0f;
+	void setRoadSettings(RoadSettings settings);
 
 private:
 	struct Iteration {
@@ -50,11 +56,11 @@ private:
 
 	Context* _context;
 	Road _road;
+	RoadSettings _settings;
 	std::vector<Iteration> _stack;
 
 	bool _hasRoad = false;
 
-	float _goalLength = 400.0f;
 	float _deadZoneRadius = 50.0f;
 	int _maxAttemptsPerIter = 3;
 
