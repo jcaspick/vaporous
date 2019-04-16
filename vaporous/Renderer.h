@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "Mesh.h"
 #include "Transformable.h"
+#include "Observer.h"
 
 using vec3 = glm::vec3;
 using vec4 = glm::vec4;
@@ -12,12 +13,15 @@ using mat4 = glm::mat4;
 using quat = glm::quat;
 
 struct Context;
-class Renderer {
+class Renderer : public Observer {
 public:
 	Renderer(Context* context);
+	~Renderer();
+
 	void init();
 	void setCamera(Camera* camera);
 	Camera* getCamera();
+	virtual void handleEvent(EventType type, EventData data) override;
 
 	void beginDraw();
 	void endDraw(float fade);
@@ -29,11 +33,11 @@ public:
 	void drawAxis(Transformable* tform, float size = 1.0f);
 
 private:
-	void buildFramebuffers();
 	void createPointBuffer();
 	void createLineBuffer();
 	void createCircleBuffer();
 	void createScreenBuffer();
+	void buildFramebuffers();
 
 	Context* _context;
 	Camera* _activeCamera;

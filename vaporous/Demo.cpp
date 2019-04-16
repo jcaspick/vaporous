@@ -63,10 +63,12 @@ Demo::Demo() :
 
 	// subscribe to events
 	_context.eventMgr->subscribe(EventType::KeyDown, this);
+	_context.eventMgr->subscribe(EventType::WindowResize, this);
 }
 
 Demo::~Demo() {
 	_context.eventMgr->unsubscribe(EventType::KeyDown, this);
+	_context.eventMgr->unsubscribe(EventType::WindowResize, this);
 	glfwTerminate();
 }
 
@@ -75,8 +77,6 @@ void Demo::init() {
 		"resources/gradients.png", false);
 	_resourceMgr.loadTexture(Textures::CarDiffuse,
 		"resources/car_diffuse.png", false);
-	_resourceMgr.bindTexture(Textures::Rainbow);
-
 	_resourceMgr.loadShader(Shaders::BasicTextured,
 		"shaders/basic.vert", "shaders/basic_textured.frag");
 
@@ -306,6 +306,9 @@ void Demo::handleEvent(EventType type, EventData data) {
 		if (data.intData == GLFW_KEY_0) {
 			toggleDebugMode();
 		}
+		break;
+	case EventType::WindowResize:
+		_mainCam.setScreenSize(_window->getSize());
 		break;
 	}
 }

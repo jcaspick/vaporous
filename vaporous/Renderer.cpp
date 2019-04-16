@@ -9,6 +9,10 @@ Renderer::Renderer(Context* context) :
 	_debugShader(nullptr)
 {}
 
+Renderer::~Renderer() {
+	_context->eventMgr->unsubscribe(EventType::WindowResize, this);
+}
+
 void Renderer::init() {
 	// load shaders
 	_debugShader = _context->resourceMgr->loadShader(Shaders::SingleColor,
@@ -33,6 +37,9 @@ void Renderer::init() {
 	createLineBuffer();
 	createCircleBuffer();
 	createScreenBuffer();
+
+	// subscribe to window resize events
+	_context->eventMgr->subscribe(EventType::WindowResize, this);
 }
 
 void Renderer::setCamera(Camera* camera) {
@@ -295,4 +302,12 @@ void Renderer::createScreenBuffer() {
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 
 		4 * sizeof(GLfloat), (GLvoid*)0);
+}
+
+void Renderer::handleEvent(EventType type, EventData data) {
+	switch (type) {
+	case EventType::WindowResize:
+		buildFramebuffers();
+		break;
+	}
 }
