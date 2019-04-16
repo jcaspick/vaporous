@@ -1,6 +1,15 @@
 #pragma once
 #include "Utilities.h"
 
+enum class CameraStyle {
+	None,
+	Chase,
+	ReverseChase,
+	Overhead,
+	Rotating,
+	Whoosh
+};
+
 class CameraMovement {
 	friend class Demo;
 
@@ -21,6 +30,7 @@ public:
 		else
 			return vec3(0.0f, _camHeight, 0.0f);
 	}
+	CameraStyle style;
 
 protected:
 	float _elapsed;
@@ -36,6 +46,7 @@ protected:
 class Cam_Chase : public CameraMovement {
 public:
 	Cam_Chase() {
+		style = CameraStyle::Chase;
 		_duration = Util::randomRange(6.0f, 12.0f);
 		_useRotation = false;
 		_camDistance = Util::randomRange(1.5f, 2.6f);
@@ -47,6 +58,7 @@ public:
 class Cam_ReverseChase : public CameraMovement {
 public:
 	Cam_ReverseChase() {
+		style = CameraStyle::ReverseChase;
 		_duration = Util::randomRange(6.0f, 12.0f);
 		_useRotation = false;
 		_camDistance = Util::randomRange(-3.2f, -2.0f);
@@ -58,6 +70,7 @@ public:
 class Cam_Overhead : public CameraMovement {
 public:
 	Cam_Overhead() {
+		style = CameraStyle::Overhead;
 		_duration = Util::randomRange(10.0f, 25.0f);
 		_useRotation = true;
 		_camDistance = 0.0f;
@@ -71,6 +84,7 @@ public:
 class Cam_Rotating : public CameraMovement {
 public:
 	Cam_Rotating() {
+		style = CameraStyle::Rotating;
 		_duration = Util::randomRange(10.0f, 25.0f);
 		_useRotation = true;
 		_camDistance = 0.0f;
@@ -84,6 +98,7 @@ public:
 class Cam_Whoosh : public CameraMovement {
 public:
 	Cam_Whoosh() {
+		style = CameraStyle::Whoosh;
 		_duration = 4.2f;
 		_useRotation = false;
 		_targetDistance = 0.0f;

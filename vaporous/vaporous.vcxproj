@@ -121,7 +121,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CameraMovements.cpp" />
     <ClCompile Include="Car.cpp" />
     <ClCompile Include="City.cpp" />
     <ClCompile Include="Demo.cpp" />

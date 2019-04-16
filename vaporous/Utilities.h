@@ -23,6 +23,10 @@ namespace Util {
 			static_cast<float>(RAND_MAX / (max - min));
 	}
 
+	inline float randomInt(float min, float max) {
+		return min + (rand() % static_cast<int>(max - min + 1));
+	}
+
 	inline bool randomBool() {
 		return rand() % 2;
 	}

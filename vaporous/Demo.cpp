@@ -190,6 +190,7 @@ void Demo::generateWorld() {
 	buildMotionPath();
 	_road.buildMesh();
 	_debugCam->setPosition(_roadGenerator.getRoadCenter());
+	getNextCameraMovement();
 	_hasWorld = true;
 }
 
@@ -208,13 +209,31 @@ void Demo::buildMotionPath() {
 }
 
 void Demo::getNextCameraMovement() {
+	CameraStyle previousStyle = _camMove ? _camMove->style : CameraStyle::None;
 	_camMove.reset();
-	float r = Util::randomRange(0.0f, 1.0f);
-	if (r < 0.2f) _camMove = p_CamMovement(new Cam_Chase());
-	else if (r < 0.4f) _camMove = p_CamMovement(new Cam_Overhead());
-	else if (r < 0.6f) _camMove = p_CamMovement(new Cam_ReverseChase());
-	else if (r < 0.8f) _camMove = p_CamMovement(new Cam_Rotating());
-	else _camMove = p_CamMovement(new Cam_Whoosh());
+
+	std::vector<CameraStyle> styles = {
+		CameraStyle::Chase,
+		CameraStyle::Overhead,
+		CameraStyle::ReverseChase,
+		CameraStyle::Rotating,
+		CameraStyle::Whoosh
+	};
+	styles.erase(std::remove_if(styles.begin(), styles.end(), 
+		[previousStyle](CameraStyle style) { return style == previousStyle;
+	}), styles.end());
+	CameraStyle nextStyle = styles.at(Util::randomInt(0, styles.size() - 1));
+
+	if (nextStyle == CameraStyle::Chase) 
+		_camMove = p_CamMovement(new Cam_Chase());
+	else if (nextStyle == CameraStyle::Overhead) 
+		_camMove = p_CamMovement(new Cam_Overhead());
+	else if (nextStyle == CameraStyle::ReverseChase) 
+		_camMove = p_CamMovement(new Cam_ReverseChase());
+	else if (nextStyle == CameraStyle::Rotating) 
+		_camMove = p_CamMovement(new Cam_Rotating());
+	else if (nextStyle == CameraStyle::Whoosh) 
+		_camMove = p_CamMovement(new Cam_Whoosh());
 }
 
 void Demo::getNextRoadSettings() {
@@ -280,6 +299,9 @@ void Demo::handleEvent(EventType type, EventData data) {
 		if (data.intData == GLFW_KEY_R) {
 			getNextRoadSettings();
 			setState(State::FadeOut);
+		}
+		if (data.intData == GLFW_KEY_C) {
+			getNextCameraMovement();
 		}
 		if (data.intData == GLFW_KEY_0) {
 			toggleDebugMode();
