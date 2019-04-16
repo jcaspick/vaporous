@@ -169,11 +169,11 @@ void Demo::draw() {
 	_car.draw();
 	_resourceMgr.bindTexture(Textures::Rainbow);
 	_road.draw();
+	if (_drawMotionPath) drawMotionPath();
 
 	_renderer.endDraw(_fade);
 
 	if (_debugMode) {
-		if (_drawMotionPath) drawMotionPath();
 		drawUI();
 	}
 
@@ -297,13 +297,13 @@ void Demo::handleEvent(EventType type, EventData data) {
 		if (data.intData == GLFW_KEY_ESCAPE)
 			_window->close();
 		if (data.intData == GLFW_KEY_R) {
-			getNextRoadSettings();
+			if (!_useCustomRoadSettings) getNextRoadSettings();
 			setState(State::FadeOut);
 		}
 		if (data.intData == GLFW_KEY_C) {
 			getNextCameraMovement();
 		}
-		if (data.intData == GLFW_KEY_0) {
+		if (data.intData == GLFW_KEY_GRAVE_ACCENT) {
 			toggleDebugMode();
 		}
 		break;
@@ -315,8 +315,8 @@ void Demo::handleEvent(EventType type, EventData data) {
 
 void Demo::toggleDebugMode() {
 	_debugMode = !_debugMode;
-	if (_debugMode) _renderer.setCamera(_debugCam.get());
-	else _renderer.setCamera(&_mainCam);
+	if (_debugMode && _useDebugCam) _renderer.setCamera(_debugCam.get());
+	else if (!_debugMode) _renderer.setCamera(&_mainCam);
 }
 
 void Demo::drawMotionPath() {
@@ -334,7 +334,7 @@ void Demo::drawMotionPath() {
 
 		// draw control points
 		for (float d = 0.0f; d < _road.length(); d += interval) {
-			_renderer.drawPoint(_road.pointAtDistance(d), vec4(1, 0, 1, 1), 3.0f);
+			_renderer.drawPoint(_road.pointAtDistance(d), vec4(1, 0, 1, 1), 0.5f);
 		}
 	}
 }
@@ -346,38 +346,68 @@ void Demo::drawUI() {
 
 	ImGui::Begin("Debug");
 
-	ImGui::DragFloat("road length", &_generatorSettings.goalLength);
-	ImGui::DragFloat("world radius", &_generatorSettings.worldRadius);
-	if (ImGui::SliderFloat("straight", &_generatorSettings.pStraight, 0.0f, 1.0f))
-		normalizeRoadSettings();
-	if (ImGui::SliderFloat("shallow", &_generatorSettings.pShallow, 0.0f, 1.0f))
-		normalizeRoadSettings();
-	if (ImGui::SliderFloat("moderate", &_generatorSettings.pModerate, 0.0f, 1.0f))
-		normalizeRoadSettings();
-	if (ImGui::SliderFloat("sharp", &_generatorSettings.pSharp, 0.0f, 1.0f))
-		normalizeRoadSettings();
+	ImGui::DragFloat("Car speed", &_carSpeed, 0.1f);
 
-	ImGui::Separator();
+	if (ImGui::CollapsingHeader("Camera")) {
+		if (ImGui::Checkbox("Use world camera", &_useDebugCam)) {
+			if (_useDebugCam) _renderer.setCamera(_debugCam.get());
+			else _renderer.setCamera(&_mainCam);
+		}
+		if (ImGui::Checkbox("Use custom camera", &_useCustomCamera)) {
+			if (_useCustomCamera) {
+				_camMove.reset();
+				_camMove = p_CamMovement(new Cam_Rotating());
+				_camMove->_duration = FLT_MAX;
+			}
+			else {
+				getNextCameraMovement();
+			}
+		}
+		if (_useCustomCamera) {
+			ImGui::DragFloat("Camera distance", &_camMove->_camDistance, 0.1f);
+			ImGui::DragFloat("Target distance", &_camMove->_targetDistance, 0.1f);
+			ImGui::DragFloat("Camera height", &_camMove->_camHeight, 0.1f);
+			ImGui::Checkbox("Use rotation", &_camMove->_useRotation);
+			ImGui::DragFloat("Rotation radius", &_camMove->_rotationRadius, 0.1f);
+			ImGui::DragFloat("Rotation speed", &_camMove->_rotationSpeed, 0.02f);
+		}
+	}
 
-	ImGui::DragFloat("carSpeed", &_carSpeed);
-	ImGui::DragFloat("carRotationOffset", &_carRotationOffset);
+	if (ImGui::CollapsingHeader("Road generator")) {
+		ImGui::Checkbox("Use custom road settings", &_useCustomRoadSettings);
+		if (_useCustomRoadSettings) {
+			ImGui::DragFloat("Road length", &_generatorSettings.goalLength);
+			ImGui::DragFloat("World radius", &_generatorSettings.worldRadius);
 
-	ImGui::Separator();
+			ImGui::Text("Segment type ratios");
+			if (ImGui::SliderFloat("Straight", &_generatorSettings.pStraight, 0.0f, 1.0f))
+				normalizeRoadSettings();
+			if (ImGui::SliderFloat("Shallow curve", &_generatorSettings.pShallow, 0.0f, 1.0f))
+				normalizeRoadSettings();
+			if (ImGui::SliderFloat("Moderate curve", &_generatorSettings.pModerate, 0.0f, 1.0f))
+				normalizeRoadSettings();
+			if (ImGui::SliderFloat("Sharp curve", &_generatorSettings.pSharp, 0.0f, 1.0f))
+				normalizeRoadSettings();
+		}
 
-	ImGui::DragFloat("camDistance", &_camMove->_camDistance, 0.1f);
-	ImGui::DragFloat("targetDistance", &_camMove->_targetDistance, 0.1f);
-	ImGui::DragFloat("camHeight", &_camMove->_camHeight, 0.1f);
-	ImGui::DragFloat("rotationRadius", &_camMove->_rotationRadius);
-	ImGui::DragFloat("rotationSpeed", &_camMove->_rotationSpeed);
-	ImGui::Checkbox("use rotation", &_camMove->_useRotation);
+		if (ImGui::Button("Generate")) {
+			if (!_useCustomRoadSettings) getNextRoadSettings();
+			setState(State::FadeOut);
+		}
+	}
 
-	ImGui::Separator();
+	if (ImGui::CollapsingHeader("Motion path")) {
+		ImGui::Checkbox("Draw motion path", &_drawMotionPath);
 
-	ImGui::DragFloat("motionPathInterval", &_motionPathInterval);
-	ImGui::DragFloat("sampleRange", &_sampleRange);
-	ImGui::DragFloat("rangeOffset", &_rangeOffset);
-	ImGui::DragInt("numSamples", &_numSamples);
-	ImGui::DragFloat("offsetStrength", &_offsetStrength, 0.1f);
+		ImGui::Text("Motion path settings");
+		ImGui::DragFloat("Interval", &_motionPathInterval, 0.5f, 1.0f);
+		ImGui::DragFloat("Range", &_sampleRange, 0.5f, 0.0f);
+		ImGui::DragFloat("Offset", &_rangeOffset);
+		ImGui::DragInt("Samples", &_numSamples, 1.0f, 0.0f);
+		ImGui::DragFloat("Curve strength", &_offsetStrength, 0.1f);
+
+		if (ImGui::Button("Rebuild motion path")) buildMotionPath();
+	}
 	ImGui::End();
 
 	ImGui::Render();

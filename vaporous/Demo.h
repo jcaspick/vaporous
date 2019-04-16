@@ -91,5 +91,8 @@ private:
 	// debug
 	void toggleDebugMode();
 	bool _debugMode = false;
+	bool _useDebugCam = false;
+	bool _useCustomRoadSettings = false;
+	bool _useCustomCamera = false;
 	bool _drawMotionPath = false;
 };
