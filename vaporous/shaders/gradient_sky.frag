@@ -3,10 +3,9 @@
 in vec2 uv;
 out vec4 fragColor;
 
-uniform sampler2D mainTex;
 uniform mat4 iview;
 uniform mat4 iprojection;
-uniform float skyColor;
+uniform float hueShift;
 
 void main()
 {
@@ -16,16 +15,23 @@ void main()
 	eyeSpace = vec4(eyeSpace.xy, -1.0f, 0.0f);
 	vec3 worldRay = normalize((iview * eyeSpace).xyz);
 
-	fragColor = texture(mainTex, vec2(skyColor, worldRay.y * 3.0f))
-		* floor(worldRay.y + 1.0f);
+	float c = 6.283 * hueShift;
+	vec3 bright = vec3(
+		((sin(c) + 1.0f) * 0.5f) * 0.8f + 0.2f,
+		((sin(c + 1.0f) + 1.0f) * 0.5f) * 0.8f + 0.2f,
+		((sin(c + 2.0f) + 1.0f) * 0.5f) * 0.8f + 0.2f
+	);
+	vec3 dark = vec3(
+		((sin(c + 0.5f) + 1.0f) * 0.5f) * 0.4f,
+		((sin(c + 1.5f) + 1.0f) * 0.5f) * 0.4f,
+		((sin(c + 2.5f) + 1.0f) * 0.5f) * 0.4f
+	);
 
-//	float c = uv.x * 6.283f;
-//	float minc = 0.0f;
-//	float maxc = 0.4f;
-//	fragColor = vec4(
-//		(sin(c) + 0.5f) * 0.5f * (maxc - minc) + minc,
-//		(sin(c + 1.5f) + 1.0f) * 0.5f * (maxc - minc) + minc,
-//		(sin(c + 2.5f) + 1.0f) * 0.5f * (maxc - minc) + minc,
-//		1.0f
-//	);
+	float gradientIndex = min(worldRay.y / 0.2f, 1.0f);
+	float isAboveHorizon = floor(worldRay.y + 1.0f);
+	float horizonLight = 1.0f - min(worldRay.y / 0.05f, 1.0f);
+	float shadow = 1.0f - 0.5f * worldRay.y;
+
+	fragColor = vec4(mix(bright, dark, gradientIndex), 1.0f)
+		* isAboveHorizon * (1 + 0.25f * horizonLight) * shadow;
 }

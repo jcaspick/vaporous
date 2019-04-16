@@ -22,10 +22,6 @@ void Renderer::init() {
 	_skyShader = _context->resourceMgr->loadShader(Shaders::Sky,
 		"shaders/screen.vert", "shaders/gradient_sky.frag");
 
-	// load textures
-	_context->resourceMgr->loadTexture(Textures::Sky,
-		"resources/sky.png", false, false, true);
-
 	// generate framebuffers
 	glGenFramebuffers(1, &_fbo);
 	glGenTextures(1, &_colorBuffer);
@@ -61,9 +57,7 @@ void Renderer::beginDraw() {
 	_context->gl->useShader(_skyShader->id);
 	_context->gl->bindVAO(_screenVao);
 
-	_context->resourceMgr->bindTexture(Textures::Sky, 1);
-	_skyShader->setInt("mainTex", 1);
-	_skyShader->setFloat("skyColor", fmod(glfwGetTime() * 0.05f, 1.0f));
+	_skyShader->setFloat("hueShift", glfwGetTime() * 0.01f);
 	_skyShader->setMat4("iview", glm::inverse(
 		_activeCamera->getViewMatrix()));
 	_skyShader->setMat4("iprojection", glm::inverse(
