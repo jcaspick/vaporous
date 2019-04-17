@@ -3,6 +3,7 @@
 #include "GL.h"
 #include "OrbitCamera.h"
 #include "TargetCamera.h"
+#include "ReflectionCamera.h"
 #include "Observer.h"
 #include "RoadGenerator.h"
 #include "Car.h"
@@ -87,6 +88,7 @@ private:
 
 	// rendering
 	float _fade = 1.0f;
+	ReflectionCamera cubeCam;
 
 	// debug
 	void toggleDebugMode();

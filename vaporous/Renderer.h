@@ -31,6 +31,8 @@ public:
 	void drawMesh(Mesh& mesh, mat4 tform, Shader* shader, 
 		float alpha = 1.0f) const;
 	void drawAxis(Transformable* tform, float size = 1.0f);
+	void drawSky();
+	void beginCubemapDraw(GLuint faceIndex);
 
 private:
 	void createPointBuffer();
@@ -39,17 +41,24 @@ private:
 	void createScreenBuffer();
 	void buildFramebuffers();
 
+	void initReflections();
+
 	Context* _context;
 	Camera* _activeCamera;
 	Shader* _debugShader;
 	Shader* _screenShader;
 	Shader* _skyShader;
+	Shader* _skyboxShader;
 
 	GLuint _fbo, _colorBuffer, _depthBuffer;
+	GLuint _cube, _cubeFbo, _cubeDepthBuffer;
+	GLsizei _cubeMapSize = 256;
+
 	GLuint _pointVbo, _pointVao;
 	GLuint _lineVbo, _lineVao;
 	GLuint _circleVbo, _circleVao;
 	GLuint _screenVbo, _screenVao;
+	GLuint _skyboxVbo, _skyboxVao;
 
 	int _circleResolution = 64;
 };

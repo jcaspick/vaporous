@@ -77,8 +77,12 @@ void Demo::init() {
 		"resources/images/gradients.png", false);
 	_resourceMgr.loadTexture(Textures::CarDiffuse,
 		"resources/images/car_diffuse.png", false);
+	_resourceMgr.loadTexture(Textures::CarReflective,
+		"resources/images/car_reflective.png", false);
 	_resourceMgr.loadShader(Shaders::BasicTextured,
 		"resources/shaders/basic.vert", "resources/shaders/basic_textured.frag");
+	_resourceMgr.loadShader(Shaders::Reflective,
+		"resources/shaders/basic.vert", "resources/shaders/reflective.frag");
 
 	// create camera
 	_debugCam = p_Camera(new OrbitCamera(&_context));
@@ -162,10 +166,30 @@ void Demo::setState(State state) {
 
 void Demo::draw() {
 	_window->beginDraw();
+
+	cubeCam.setFOV(90.0f);
+	cubeCam.setPosition(_car.getPosition() + vec3(0, 0.5f, 0));
+	cubeCam.setScreenSize(vec2(256, 256));
+	glViewport(0, 0, 256, 256);
+	Camera* prevCam = _renderer.getCamera();
+	_renderer.setCamera(&cubeCam);
+	// reflection probe
+	for (GLuint i = 0; i < 6; ++i) {
+		cubeCam.setFaceIndex(i);
+		_renderer.beginCubemapDraw(i);
+		_renderer.drawSky();
+		_city.draw();
+		_resourceMgr.bindTexture(Textures::Rainbow);
+		_road.draw();
+	}
+	//
+	glViewport(0, 0, _window->getSize().x, _window->getSize().y);
+	_renderer.setCamera(prevCam);
 	_renderer.beginDraw();
 
 	_city.draw();
 	_resourceMgr.bindTexture(Textures::CarDiffuse);
+	_resourceMgr.bindTexture(Textures::CarReflective, 1);
 	_car.draw();
 	_resourceMgr.bindTexture(Textures::Rainbow);
 	_road.draw();

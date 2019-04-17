@@ -9,6 +9,7 @@ public:
 	void bindTexture1(GLuint id);
 	void bindTexture2(GLuint id);
 	void bindTexture3(GLuint id);
+	void bindCubemap4(GLuint id);
 	void bindVAO(GLuint id);
 	void bindFBO(GLuint id);
 	void setLineMode(bool lineMode);
@@ -24,6 +25,7 @@ private:
 	GLuint _texture1;
 	GLuint _texture2;
 	GLuint _texture3;
+	GLuint _texture4;
 	GLuint _vao;
 	GLuint _fbo;
 	bool _isLineMode;

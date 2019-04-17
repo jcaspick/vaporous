@@ -21,6 +21,8 @@ void Renderer::init() {
 		"resources/shaders/screen.vert", "resources/shaders/post_dither.frag");
 	_skyShader = _context->resourceMgr->loadShader(Shaders::Sky,
 		"resources/shaders/screen.vert", "resources/shaders/gradient_sky.frag");
+	_skyboxShader = _context->resourceMgr->loadShader(Shaders::Skybox,
+		"resources/shaders/skybox.vert", "resources/shaders/skybox.frag");
 
 	// generate framebuffers
 	glGenFramebuffers(1, &_fbo);
@@ -33,6 +35,8 @@ void Renderer::init() {
 	createLineBuffer();
 	createCircleBuffer();
 	createScreenBuffer();
+
+	initReflections();
 
 	// subscribe to window resize events
 	_context->eventMgr->subscribe(EventType::WindowResize, this);
@@ -85,6 +89,50 @@ void Renderer::endDraw(float fade) {
 	_screenShader->setFloat("fade", fade);
 
 	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	//_context->gl->bindFBO(0);
+	//glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//_context->gl->setLineMode(false);
+	//_context->gl->bindCubemap4(_cube);
+	//_context->gl->useShader(_skyboxShader->id);
+	//_context->gl->bindVAO(_skyboxVao);
+
+	//_skyboxShader->setMat4("view", glm::mat4(
+	//	glm::mat3(_activeCamera->getViewMatrix())));
+	//_skyboxShader->setMat4("projection", _activeCamera->getProjectionMatrix());
+	//_skyboxShader->setInt("cubemap", 4);
+
+	//glDepthMask(GL_FALSE);
+	//glDrawArrays(GL_TRIANGLES, 0, 36);
+	//glDepthMask(GL_TRUE);
+}
+
+void Renderer::beginCubemapDraw(GLuint faceIndex) {
+	_context->gl->bindFBO(_cubeFbo);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+		GL_TEXTURE_CUBE_MAP_POSITIVE_X + faceIndex, _cube, 0);
+
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void Renderer::drawSky() {
+	// draw sky
+	_context->gl->setLineMode(false);
+	_context->gl->useShader(_skyShader->id);
+	_context->gl->bindVAO(_screenVao);
+
+	_skyShader->setFloat("hueShift", glfwGetTime() * 0.01f);
+	_skyShader->setMat4("iview", glm::inverse(
+		_activeCamera->getViewMatrix()));
+	_skyShader->setMat4("iprojection", glm::inverse(
+		_activeCamera->getProjectionMatrix()));
+
+	glDepthMask(GL_FALSE);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glDepthMask(GL_TRUE);
 }
 
 void Renderer::drawPoint(vec3 point, vec4 color, float size) {
@@ -175,8 +223,13 @@ void Renderer::drawMesh(Mesh& mesh, mat4 tform, Shader* shader,
 	shader->setMat4("model", tform);
 	shader->setMat4("view", _activeCamera->getViewMatrix());
 	shader->setMat4("projection", _activeCamera->getProjectionMatrix());
+	shader->setVec3("cameraPos", _activeCamera->getPosition());
 	shader->setFloat("alpha", alpha);
 	shader->setInt("mainTex", 0);
+	shader->setInt("reflectiveMap", 1);
+
+	_context->gl->bindCubemap4(_cube);
+	shader->setInt("cubeMap", 4);
 
 	glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
 }
@@ -304,4 +357,98 @@ void Renderer::handleEvent(EventType type, EventData data) {
 		buildFramebuffers();
 		break;
 	}
+}
+
+void Renderer::initReflections() {
+	// create empty cubemap
+	glGenTextures(1, &_cube);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, _cube);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+	for (GLuint i = 0; i < 6; ++i) {
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, 
+			_cubeMapSize, _cubeMapSize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	}
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+	// create framebuffer for rendering to the cubemap
+	glGenFramebuffers(1, &_cubeFbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, _cubeFbo);
+
+	// create depth buffer
+	glGenRenderbuffers(1, &_cubeDepthBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, _cubeDepthBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, _cubeMapSize, _cubeMapSize);
+
+	// complete framebuffer
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+		GL_RENDERBUFFER, _cubeDepthBuffer);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+		GL_TEXTURE_CUBE_MAP_POSITIVE_X, _cube, 0);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		std::cout << "Error: cubemap framebuffer is incomplete" << std::endl;
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// create VAO for drawing a skybox
+	float skyboxVertices[] = {
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		-1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f
+	};
+
+	glGenVertexArrays(1, &_skyboxVao);
+	glGenBuffers(1, &_skyboxVbo);
+
+	glBindBuffer(GL_ARRAY_BUFFER, _skyboxVbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices),
+		skyboxVertices, GL_STATIC_DRAW);
+
+	glBindVertexArray(_skyboxVao);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
+		3 * sizeof(GLfloat), (GLvoid*)0);
 }

@@ -48,6 +48,14 @@ void GL::bindTexture3(GLuint id) {
 	_texture3 = id;
 }
 
+void GL::bindCubemap4(GLuint id) {
+	if (_texture4 == id) return;
+
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, id);
+	_texture4 = id;
+}
+
 void GL::bindVAO(GLuint id) {
 	if (_vao == id) return;
 

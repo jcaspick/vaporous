@@ -4,6 +4,7 @@ enum class Textures {
 	YungFrink,
 	Rainbow,
 	CarDiffuse,
+	CarReflective,
 	Sky,
 	Noise
 };
@@ -14,5 +15,7 @@ enum class Shaders {
 	Screen,
 	Sky,
 	CityBg,
-	City
+	City,
+	Reflective,
+	Skybox
 };

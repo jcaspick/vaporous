@@ -37,3 +37,7 @@ void TargetCamera::setTarget(vec3 pos) {
 void TargetCamera::setFOV(float fov) {
 	_fov = fov;
 }
+
+vec3 TargetCamera::getPosition() {
+	return _position;
+}

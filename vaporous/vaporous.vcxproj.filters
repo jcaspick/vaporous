@@ -105,6 +105,9 @@
     <ClCompile Include="Renderer.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
+    <ClCompile Include="ReflectionCamera.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h">
@@ -227,6 +230,9 @@
     <ClInclude Include="Renderer.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="ReflectionCamera.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shaders\basic.vert">
@@ -254,6 +260,15 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="resources\shaders\screen.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="resources\shaders\reflective.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="resources\shaders\skybox.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="resources\shaders\skybox.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
