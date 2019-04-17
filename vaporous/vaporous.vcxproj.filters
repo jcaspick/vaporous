@@ -1,18 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{c0cfab07-0a4a-41d6-9362-c2b5058e6d06}</UniqueIdentifier>
     </Filter>
@@ -63,25 +51,16 @@
     <ClCompile Include="main.cpp">
       <Filter>Demo</Filter>
     </ClCompile>
-    <ClCompile Include="Transformable.cpp">
-      <Filter>Demo</Filter>
-    </ClCompile>
     <ClCompile Include="RoadSegment.cpp">
       <Filter>Demo</Filter>
     </ClCompile>
     <ClCompile Include="Road.cpp">
       <Filter>Demo</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>Demo</Filter>
-    </ClCompile>
     <ClCompile Include="HeightMap.cpp">
       <Filter>Demo</Filter>
     </ClCompile>
     <ClCompile Include="RoadGenerator.cpp">
-      <Filter>Demo</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
       <Filter>Demo</Filter>
     </ClCompile>
     <ClCompile Include="include\imgui\imgui.cpp">
@@ -116,6 +95,15 @@
     </ClCompile>
     <ClCompile Include="City.cpp">
       <Filter>Demo</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Transformable.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -158,9 +146,6 @@
     <ClInclude Include="OrbitCamera.h">
       <Filter>Demo</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Demo</Filter>
-    </ClInclude>
     <ClInclude Include="Demo.h">
       <Filter>Demo</Filter>
     </ClInclude>
@@ -170,16 +155,10 @@
     <ClInclude Include="MeshUtilities.h">
       <Filter>Demo</Filter>
     </ClInclude>
-    <ClInclude Include="Transformable.h">
-      <Filter>Demo</Filter>
-    </ClInclude>
     <ClInclude Include="RoadSegment.h">
       <Filter>Demo</Filter>
     </ClInclude>
     <ClInclude Include="Road.h">
-      <Filter>Demo</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer.h">
       <Filter>Demo</Filter>
     </ClInclude>
     <ClInclude Include="BiarcUtility.h">
@@ -192,9 +171,6 @@
       <Filter>Demo</Filter>
     </ClInclude>
     <ClInclude Include="RoadGenerator.h">
-      <Filter>Demo</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
       <Filter>Demo</Filter>
     </ClInclude>
     <ClInclude Include="include\imgui\imconfig.h">
@@ -238,6 +214,18 @@
     </ClInclude>
     <ClInclude Include="CameraMovements.h">
       <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Transformable.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
