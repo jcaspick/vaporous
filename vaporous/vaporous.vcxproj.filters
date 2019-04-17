@@ -241,31 +241,31 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\basic_textured.frag">
+    <None Include="resources\shaders\basic.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\basic.vert">
+    <None Include="resources\shaders\basic_singleColor.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\basic_singleColor.frag">
+    <None Include="resources\shaders\basic_textured.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\post_dither.frag">
+    <None Include="resources\shaders\city_bg.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\screen.vert">
+    <None Include="resources\shaders\city_building.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\gradient_sky.frag">
+    <None Include="resources\shaders\city_building.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\city_bg.vert">
+    <None Include="resources\shaders\gradient_sky.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\city_building.frag">
+    <None Include="resources\shaders\post_dither.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\city_building.vert">
+    <None Include="resources\shaders\screen.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

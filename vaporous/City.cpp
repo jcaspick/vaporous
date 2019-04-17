@@ -38,11 +38,11 @@ void City::draw() {
 
 void City::init() {
 	_bgShader = _context->resourceMgr->loadShader(Shaders::CityBg,
-		"shaders/city_bg.vert", "shaders/basic_singleColor.frag");
+		"resources/shaders/city_bg.vert", "resources/shaders/basic_singleColor.frag");
 	_cityShader = _context->resourceMgr->loadShader(Shaders::City,
-		"shaders/city_building.vert", "shaders/city_building.frag");
+		"resources/shaders/city_building.vert", "resources/shaders/city_building.frag");
 	_context->resourceMgr->loadTexture(Textures::Noise,
-		"resources/uniformNoise.png", false);
+		"resources/images/uniformNoise.png", false);
 
 	glGenBuffers(1, &_bgData1);
 	glGenBuffers(1, &_bgData2);

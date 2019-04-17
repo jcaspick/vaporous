@@ -6,7 +6,7 @@ Car::Car(Context* context) :
 {}
 
 void Car::init() {
-	_mesh = MeshUtil::loadFromObj("resources/car.obj", 0.05f);
+	_mesh = MeshUtil::loadFromObj("resources/3d/car.obj", 0.05f);
 	_mesh.bind();
 }
 

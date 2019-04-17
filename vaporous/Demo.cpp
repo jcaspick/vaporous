@@ -74,11 +74,11 @@ Demo::~Demo() {
 
 void Demo::init() {
 	_resourceMgr.loadTexture(Textures::Rainbow,
-		"resources/gradients.png", false);
+		"resources/images/gradients.png", false);
 	_resourceMgr.loadTexture(Textures::CarDiffuse,
-		"resources/car_diffuse.png", false);
+		"resources/images/car_diffuse.png", false);
 	_resourceMgr.loadShader(Shaders::BasicTextured,
-		"shaders/basic.vert", "shaders/basic_textured.frag");
+		"resources/shaders/basic.vert", "resources/shaders/basic_textured.frag");
 
 	// create camera
 	_debugCam = p_Camera(new OrbitCamera(&_context));

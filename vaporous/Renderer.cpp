@@ -16,11 +16,11 @@ Renderer::~Renderer() {
 void Renderer::init() {
 	// load shaders
 	_debugShader = _context->resourceMgr->loadShader(Shaders::SingleColor,
-		"shaders/basic.vert", "shaders/basic_singleColor.frag");
+		"resources/shaders/basic.vert", "resources/shaders/basic_singleColor.frag");
 	_screenShader = _context->resourceMgr->loadShader(Shaders::Screen,
-		"shaders/screen.vert", "shaders/post_dither.frag");
+		"resources/shaders/screen.vert", "resources/shaders/post_dither.frag");
 	_skyShader = _context->resourceMgr->loadShader(Shaders::Sky,
-		"shaders/screen.vert", "shaders/gradient_sky.frag");
+		"resources/shaders/screen.vert", "resources/shaders/gradient_sky.frag");
 
 	// generate framebuffers
 	glGenFramebuffers(1, &_fbo);
