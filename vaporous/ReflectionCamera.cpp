@@ -35,6 +35,7 @@ mat4 ReflectionCamera::getViewMatrix() {
 		return glm::lookAt(_position, _position + vec3(0, 0, -1), vec3(0, -1, 0));
 		break;
 	}
+	return mat4(1);
 }
 
 mat4 ReflectionCamera::getProjectionMatrix() {

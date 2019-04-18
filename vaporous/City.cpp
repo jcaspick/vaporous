@@ -118,7 +118,7 @@ void City::generateBuildings(float worldRadius, std::vector<vec3> samples) {
 			// have matching rotations to suggest that they are aligned
 			// to city blocks
 			else if (distanceToBuilding < 100.0f * _buildingScale) {
-				rotation = Util::randomBool ?
+				rotation = Util::randomBool() ?
 					transform.w : transform.w + glm::radians(90.0f);
 			}
 		}

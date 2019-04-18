@@ -9,7 +9,7 @@
 class Shader {
 
 public:
-	Shader() {}
+	Shader();
 
 	Shader& use();
 	bool loadFromFile(const std::string& vertFile, const std::string& fragFile,

@@ -4,6 +4,10 @@
 #include <sstream>
 #include <fstream>
 
+Shader::Shader() :
+	id(0)
+{}
+
 Shader& Shader::use() {
 	glUseProgram(id);
 	return *this;
