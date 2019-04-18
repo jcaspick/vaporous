@@ -208,6 +208,7 @@
     <None Include="resources\shaders\basic_textured.frag" />
     <None Include="resources\shaders\city_building.frag" />
     <None Include="resources\shaders\city_building.vert" />
+    <None Include="resources\shaders\gaussian_blur.frag" />
     <None Include="resources\shaders\gradient_sky.frag" />
     <None Include="resources\shaders\city_bg.vert" />
     <None Include="resources\shaders\post_dither.frag" />

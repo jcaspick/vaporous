@@ -271,5 +271,8 @@
     <None Include="resources\shaders\skybox.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="resources\shaders\gaussian_blur.frag">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

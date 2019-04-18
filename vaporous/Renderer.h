@@ -25,6 +25,7 @@ public:
 	virtual void handleEvent(EventType type, EventData data) override;
 
 	void beginDraw();
+	void applyBlur();
 	void endDraw(float fade);
 	void drawPoint(vec3 point, vec4 color, float size = 1.0f);
 	void drawLine(vec3 a, vec3 b, vec4 color);
@@ -41,18 +42,22 @@ private:
 	void createCircleBuffer();
 	void createScreenBuffer();
 	void createSkyboxBuffer();
+
 	void buildFramebuffers();
 	void buildCubemapFramebuffer();
+	void buildBlurFramebuffer();
 
 	Context* _context;
 	Camera* _activeCamera;
 	Shader* _debugShader;
 	Shader* _screenShader;
+	Shader* _blurShader;
 	Shader* _skyShader;
 	Shader* _skyboxShader;
 
-	GLuint _fbo, _colorBuffer, _depthBuffer;
+	GLuint _fbo, _colorBuffer, _glowBuffer, _depthBuffer;
 	GLuint _cube, _cubeFbo, _cubeDepthBuffer;
+	GLuint _blurFbo[2], _blurBuffer[2];
 	GLsizei _cubeMapSize = 512;
 
 	GLuint _pointVbo, _pointVao;

@@ -1,5 +1,6 @@
 #version 330 core
-out vec4 fragColor;
+layout (location = 0) out vec4 fragColor;
+layout (location = 1) out vec4 glowColor;
 
 in vec2 uv;
 in vec3 normal;
@@ -16,9 +17,10 @@ void main()
 	vec3 i = normalize(fragPos - cameraPos);
 	vec3 r = reflect(i, normalize(normal));
 
-	vec3 diffuse = vec3(texture(mainTex, uv));
+	vec3 color = vec3(texture(mainTex, uv));
 	vec4 reflective = texture(reflectiveMap, uv);
 	vec3 reflections = vec3(texture(cubeMap, r));
 
-	fragColor = vec4(mix(diffuse, reflections, reflective.r), 1.0f);
+	fragColor = vec4(mix(vec3(0), reflections, reflective.r) + color, 1.0f);
+	glowColor = vec4(color, 1.0f);
 }

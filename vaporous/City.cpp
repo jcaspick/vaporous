@@ -8,6 +8,7 @@ City::City(Context* context) :
 void City::draw() {
 	Camera* cam = _context->renderer->getCamera();
 	_context->gl->setLineMode(false);
+	_context->gl->setNumBuffers(2);
 
 	// draw city
 	_context->gl->useShader(_cityShader->id);
@@ -25,6 +26,7 @@ void City::draw() {
 	_cityShader->setFloat("fogDist", 75.0f);
 
 	glDrawArraysInstanced(GL_TRIANGLES, 0, 30, _buildingTransforms.size());
+	_context->gl->setNumBuffers(1);
 
 	// draw background
 	_context->gl->useShader(_bgShader->id);

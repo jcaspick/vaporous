@@ -78,7 +78,7 @@ void Demo::init() {
 	_resourceMgr.loadTexture(Textures::Rainbow,
 		"resources/images/gradients.png", false);
 	_resourceMgr.loadTexture(Textures::CarDiffuse,
-		"resources/images/car_diffuse.png", false);
+		"resources/images/car_glow.png", false);
 	_resourceMgr.loadTexture(Textures::CarReflective,
 		"resources/images/car_reflective.png", false);
 	_resourceMgr.loadShader(Shaders::BasicTextured,
@@ -195,6 +195,7 @@ void Demo::draw() {
 	_road.draw();
 	if (_drawMotionPath) drawMotionPath();
 
+	_renderer.applyBlur();
 	_renderer.endDraw(_fade);
 
 	if (_debugMode) {

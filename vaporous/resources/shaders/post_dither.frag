@@ -4,6 +4,7 @@ in vec2 uv;
 out vec4 fragColor;
 
 uniform sampler2D mainTex;
+uniform sampler2D blurTex;
 uniform sampler2D watermark;
 uniform vec2 window;
 uniform float fade;
@@ -24,10 +25,11 @@ void main()
 	float alpha = 1.0f - ceil(fade - 
 		dither[index.x + index.y * 6] / 36);
 	vec3 color = texture(mainTex, uv).rgb;
+	vec3 blur = texture(blurTex, uv).rgb;
 
 	vec2 wmUv = vec2((uv.x * window.x - (window.x - 128))
 		/ 128, uv.y * window.y / 16);
 	vec3 wm = texture(watermark, wmUv).rgb;
 
-	fragColor = vec4(color + wm * 0.2f, alpha);
+	fragColor = vec4(color + blur + wm * 0.2f, alpha);
 }

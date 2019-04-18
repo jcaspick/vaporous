@@ -18,5 +18,6 @@ enum class Shaders {
 	CityBg,
 	City,
 	Reflective,
-	Skybox
+	Skybox,
+	GaussianBlur
 };

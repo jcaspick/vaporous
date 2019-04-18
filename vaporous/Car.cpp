@@ -11,6 +11,8 @@ void Car::init() {
 }
 
 void Car::draw() {
+	_context->gl->setNumBuffers(2);
 	_context->renderer->drawMesh(_mesh, getModelMatrix(),
 		&_context->resourceMgr->getShader(Shaders::Reflective));
+	_context->gl->setNumBuffers(1);
 }

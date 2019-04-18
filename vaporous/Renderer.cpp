@@ -19,6 +19,8 @@ void Renderer::init() {
 		"resources/shaders/basic.vert", "resources/shaders/basic_singleColor.frag");
 	_screenShader = _context->resourceMgr->loadShader(Shaders::Screen,
 		"resources/shaders/screen.vert", "resources/shaders/post_dither.frag");
+	_blurShader = _context->resourceMgr->loadShader(Shaders::GaussianBlur,
+		"resources/shaders/screen.vert", "resources/shaders/gaussian_blur.frag");
 	_skyShader = _context->resourceMgr->loadShader(Shaders::Sky,
 		"resources/shaders/screen.vert", "resources/shaders/gradient_sky.frag");
 	_skyboxShader = _context->resourceMgr->loadShader(Shaders::Skybox,
@@ -29,9 +31,13 @@ void Renderer::init() {
 	// generate framebuffers
 	glGenFramebuffers(1, &_fbo);
 	glGenTextures(1, &_colorBuffer);
+	glGenTextures(1, &_glowBuffer);
 	glGenRenderbuffers(1, &_depthBuffer);
+	glGenFramebuffers(2, _blurFbo);
+	glGenTextures(2, _blurBuffer);
 	buildFramebuffers();
 	buildCubemapFramebuffer();
+	buildBlurFramebuffer();
 
 	// create vaos for different types of drawing
 	createPointBuffer();
@@ -59,13 +65,45 @@ GLsizei Renderer::getCubemapSize() {
 void Renderer::beginDraw() {
 	// switch to framebuffer
 	_context->gl->bindFBO(_fbo);
+	_context->gl->setNumBuffers(2);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	_context->gl->setNumBuffers(1);
 
 	// set viewport size to window size
 	_context->gl->setViewportSize(
 		static_cast<GLsizei>(_context->window->getSize().x),
 		static_cast<GLsizei>(_context->window->getSize().y));
+}
+
+void Renderer::applyBlur() {
+	// perform blur at half resolution to get a more dramatic effect
+	// in fewer iterations
+	vec2 window = _context->window->getSize();
+	_context->gl->setViewportSize(window.x / 2, window.y / 2);
+
+	// ping-pong between two buffers, increasing blur amount
+	int buffer = 0;
+	for (int i = 0; i < 6; i++) {
+		_context->gl->bindFBO(_blurFbo[buffer]);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		_context->gl->setLineMode(false);
+		_context->gl->useShader(_blurShader->id);
+		_context->gl->bindVAO(_screenVao);
+		if (i == 0) _context->gl->bindTexture0(_glowBuffer);
+		else _context->gl->bindTexture0(_blurBuffer[!buffer]);
+
+		_blurShader->setInt("horizontal", buffer);
+		_blurShader->setInt("image", 0);
+
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		buffer = !buffer;
+	}
+
+	// restore original resolution
+	_context->gl->setViewportSize(window.x, window.y);
 }
 
 void Renderer::endDraw(float fade) {
@@ -79,9 +117,11 @@ void Renderer::endDraw(float fade) {
 	_context->gl->useShader(_screenShader->id);
 	_context->gl->bindVAO(_screenVao);
 	_context->gl->bindTexture0(_colorBuffer);
+	_context->gl->bindTexture1(_blurBuffer[1]);
 	_context->resourceMgr->bindTexture(Textures::Watermark, 3);
 
 	_screenShader->setInt("mainTex", 0);
+	_screenShader->setInt("blurTex", 1);
 	_screenShader->setInt("watermark", 3);
 	_screenShader->setVec2("window", _context->window->getSize());
 	_screenShader->setFloat("fade", fade);
@@ -229,6 +269,14 @@ void Renderer::buildFramebuffers() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+	// build glow buffer
+	glBindTexture(GL_TEXTURE_2D, _glowBuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, window.x, window.y,
+		0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
 	// build depth buffer
 	glBindRenderbuffer(GL_RENDERBUFFER, _depthBuffer);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 
@@ -239,6 +287,8 @@ void Renderer::buildFramebuffers() {
 	glBindFramebuffer(GL_FRAMEBUFFER, _fbo);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 
 		GL_TEXTURE_2D, _colorBuffer, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1,
+		GL_TEXTURE_2D, _glowBuffer, 0);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
 		GL_RENDERBUFFER, _depthBuffer);
 
@@ -430,10 +480,33 @@ void Renderer::buildCubemapFramebuffer() {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void Renderer::buildBlurFramebuffer() {
+	vec2 window = _context->window->getSize();
+
+	for (int i = 0; i < 2; i++) {
+		glBindFramebuffer(GL_FRAMEBUFFER, _blurFbo[i]);
+		glBindTexture(GL_TEXTURE_2D, _blurBuffer[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, window.x / 2, window.y / 2, 0, 
+			GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+			_blurBuffer[i], 0);
+	}
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		std::cout << "Error: blur framebuffer is incomplete" << std::endl;
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 void Renderer::handleEvent(EventType type, EventData data) {
 	switch (type) {
 	case EventType::WindowResize:
 		buildFramebuffers();
+		buildBlurFramebuffer();
 		break;
 	}
 }

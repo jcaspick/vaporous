@@ -85,3 +85,18 @@ void GL::setViewportSize(GLsizei width, GLsizei height) {
 	_viewportWidth = width;
 	_viewportHeight = height;
 }
+
+void GL::setNumBuffers(GLuint n) {
+	if (_numBuffers == n) return;
+
+	if (n == 1) {
+		glDrawBuffer(GL_COLOR_ATTACHMENT0);
+	}
+	else {
+		GLuint attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, 
+			GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+		glDrawBuffers(n, attachments);
+	}
+
+	_numBuffers = n;
+}

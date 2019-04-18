@@ -1,5 +1,6 @@
 #version 330 core
-out vec4 fragColor;
+layout (location = 0) out vec4 fragColor;
+layout (location = 1) out vec4 glow;
 
 in vec2 uv;
 in float xFacing;
@@ -66,4 +67,5 @@ void main()
 	float heightIndex = (worldPos.y - cityBottom) / (totalHeight - cityBottom);
 	fragColor = vec4(mix(bottomColor, topColor, heightIndex) * isWindow
 		* isLit * min((worldPos.y * 0.1f - cityBottom * 0.1f), 1.0f) * fog, 1.0f);
+	glow = fragColor;
 }
