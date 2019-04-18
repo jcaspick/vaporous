@@ -21,6 +21,7 @@ public:
 	bool isOpen();
 	void beginDraw();
 	void endDraw();
+	void toggleFullscreen();
 
 	GLFWwindow* getGlfwWindow();
 	EventManager* getEventMgr();
@@ -41,10 +42,15 @@ public:
 		int height);
 
 private:
+	GLFWmonitor* getCurrentMonitor();
+
 	GLFWwindow* _window;
 	EventManager _eventMgr;
 	InputManager _inputMgr;
 	int _width;
 	int _height;
+	int _xPos, _yPos;
+	int _prevWidth, _prevHeight;
 	vec4 _clearColor;
+	bool _isFullscreen = false;
 };

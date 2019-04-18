@@ -50,6 +50,21 @@ void Window::endDraw() {
 	glfwSwapBuffers(_window);
 }
 
+void Window::toggleFullscreen() {
+	_isFullscreen = !_isFullscreen;
+	if (_isFullscreen) {
+		glfwGetWindowPos(_window, &_xPos, &_yPos);
+		glfwGetWindowSize(_window, &_prevWidth, &_prevHeight);
+		const GLFWvidmode* mode = glfwGetVideoMode(getCurrentMonitor());
+		glfwSetWindowMonitor(_window, getCurrentMonitor(), 0, 0,
+			mode->width, mode->height, 0);
+	}
+	else {
+		glfwSetWindowMonitor(_window, nullptr, _xPos, _yPos, 
+			_prevWidth, _prevHeight, 0);
+	}
+}
+
 void Window::glfwKeyCallback(GLFWwindow* window, int key, 
 	int scancode, int action, int mods) 
 {
@@ -104,4 +119,37 @@ vec2 Window::getSize() {
 
 void Window::setClearColor(vec4 color) {
 	_clearColor = color;
+}
+
+GLFWmonitor* Window::getCurrentMonitor() {
+	int numMonitors;
+	int wX, wY, wWidth, wHeight;
+	int mX, mY, mWidth, mHeight;
+	int overlap = 0;
+	int maxOverlap = -1;
+	GLFWmonitor* bestMatch = nullptr;
+	GLFWmonitor** monitors;
+	const GLFWvidmode* mode;
+
+	glfwGetWindowPos(_window, &wX, &wY);
+	glfwGetWindowSize(_window, &wWidth, &wHeight);
+	monitors = glfwGetMonitors(&numMonitors);
+
+	for (int i = 0; i < numMonitors; i++) {
+		mode = glfwGetVideoMode(monitors[i]);
+		glfwGetMonitorPos(monitors[i], &mX, &mY);
+		mWidth = mode->width;
+		mHeight = mode->height;
+
+		overlap = 
+			std::max(0, std::min(wX + wWidth, mX + mWidth) - std::max(wX, mX)) *
+			std::max(0, std::min(wY + wHeight, mY + mHeight) - std::max(wY, mY));
+
+		if (overlap > maxOverlap) {
+			maxOverlap = overlap;
+			bestMatch = monitors[i];
+		}
+	}
+
+	return bestMatch;
 }

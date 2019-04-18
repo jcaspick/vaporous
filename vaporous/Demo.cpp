@@ -330,6 +330,11 @@ void Demo::handleEvent(EventType type, EventData data) {
 		if (data.intData == GLFW_KEY_GRAVE_ACCENT) {
 			toggleDebugMode();
 		}
+		if (data.intData == GLFW_KEY_F && _window->getInputMgr()->
+			getKey(GLFW_KEY_LEFT_CONTROL)) 
+		{
+			_window->toggleFullscreen();
+		}
 		break;
 	case EventType::WindowResize:
 		_mainCam.setScreenSize(_window->getSize());
