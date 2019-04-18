@@ -77,3 +77,11 @@ void GL::setLineMode(bool lineMode) {
 		lineMode ? GL_LINE : GL_FILL);
 	_isLineMode = lineMode;
 }
+
+void GL::setViewportSize(GLsizei width, GLsizei height) {
+	if (width == _viewportWidth && height == _viewportHeight) return;
+
+	glViewport(0, 0, width, height);
+	_viewportWidth = width;
+	_viewportHeight = height;
+}

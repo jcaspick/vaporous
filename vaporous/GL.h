@@ -13,6 +13,7 @@ public:
 	void bindVAO(GLuint id);
 	void bindFBO(GLuint id);
 	void setLineMode(bool lineMode);
+	void setViewportSize(GLsizei width, GLsizei height);
 
 	GLuint getShader();
 	GLuint getTexture0();
@@ -29,4 +30,6 @@ private:
 	GLuint _vao;
 	GLuint _fbo;
 	bool _isLineMode;
+	GLsizei _viewportWidth;
+	GLsizei _viewportHeight;
 };

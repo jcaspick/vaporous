@@ -29,14 +29,14 @@ void Renderer::init() {
 	glGenTextures(1, &_colorBuffer);
 	glGenRenderbuffers(1, &_depthBuffer);
 	buildFramebuffers();
+	buildCubemapFramebuffer();
 
-	// create buffers for debug drawing
+	// create vaos for different types of drawing
 	createPointBuffer();
 	createLineBuffer();
 	createCircleBuffer();
 	createScreenBuffer();
-
-	initReflections();
+	createSkyboxBuffer();
 
 	// subscribe to window resize events
 	_context->eventMgr->subscribe(EventType::WindowResize, this);
@@ -50,26 +50,20 @@ Camera* Renderer::getCamera() {
 	return _activeCamera;
 }
 
+GLsizei Renderer::getCubemapSize() {
+	return _cubeMapSize;
+}
+
 void Renderer::beginDraw() {
 	// switch to framebuffer
 	_context->gl->bindFBO(_fbo);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// draw sky
-	_context->gl->setLineMode(false);
-	_context->gl->useShader(_skyShader->id);
-	_context->gl->bindVAO(_screenVao);
-
-	_skyShader->setFloat("hueShift", glfwGetTime() * 0.01f);
-	_skyShader->setMat4("iview", glm::inverse(
-		_activeCamera->getViewMatrix()));
-	_skyShader->setMat4("iprojection", glm::inverse(
-		_activeCamera->getProjectionMatrix()));
-
-	glDepthMask(GL_FALSE);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-	glDepthMask(GL_TRUE);
+	// set viewport size to window size
+	_context->gl->setViewportSize(
+		static_cast<GLsizei>(_context->window->getSize().x),
+		static_cast<GLsizei>(_context->window->getSize().y));
 }
 
 void Renderer::endDraw(float fade) {
@@ -89,31 +83,18 @@ void Renderer::endDraw(float fade) {
 	_screenShader->setFloat("fade", fade);
 
 	glDrawArrays(GL_TRIANGLES, 0, 6);
-
-	//_context->gl->bindFBO(0);
-	//glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	//_context->gl->setLineMode(false);
-	//_context->gl->bindCubemap4(_cube);
-	//_context->gl->useShader(_skyboxShader->id);
-	//_context->gl->bindVAO(_skyboxVao);
-
-	//_skyboxShader->setMat4("view", glm::mat4(
-	//	glm::mat3(_activeCamera->getViewMatrix())));
-	//_skyboxShader->setMat4("projection", _activeCamera->getProjectionMatrix());
-	//_skyboxShader->setInt("cubemap", 4);
-
-	//glDepthMask(GL_FALSE);
-	//glDrawArrays(GL_TRIANGLES, 0, 36);
-	//glDepthMask(GL_TRUE);
 }
 
-void Renderer::beginCubemapDraw(GLuint faceIndex) {
+void Renderer::bindCubemapFace(GLuint faceIndex) {
+	// bind cubemap framebuffer and use specified face as color attachment
 	_context->gl->bindFBO(_cubeFbo);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
 		GL_TEXTURE_CUBE_MAP_POSITIVE_X + faceIndex, _cube, 0);
 
+	// set viewport to cubemap size
+	_context->gl->setViewportSize(_cubeMapSize, _cubeMapSize);
+
+	// clear buffer
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
@@ -219,6 +200,7 @@ void Renderer::drawMesh(Mesh& mesh, mat4 tform, Shader* shader,
 	_context->gl->useShader(shader->id);
 	_context->gl->bindVAO(mesh._vao);
 	_context->gl->setLineMode(false);
+	_context->gl->bindCubemap4(_cube);
 
 	shader->setMat4("model", tform);
 	shader->setMat4("view", _activeCamera->getViewMatrix());
@@ -227,8 +209,6 @@ void Renderer::drawMesh(Mesh& mesh, mat4 tform, Shader* shader,
 	shader->setFloat("alpha", alpha);
 	shader->setInt("mainTex", 0);
 	shader->setInt("reflectiveMap", 1);
-
-	_context->gl->bindCubemap4(_cube);
 	shader->setInt("cubeMap", 4);
 
 	glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
@@ -351,51 +331,7 @@ void Renderer::createScreenBuffer() {
 		4 * sizeof(GLfloat), (GLvoid*)0);
 }
 
-void Renderer::handleEvent(EventType type, EventData data) {
-	switch (type) {
-	case EventType::WindowResize:
-		buildFramebuffers();
-		break;
-	}
-}
-
-void Renderer::initReflections() {
-	// create empty cubemap
-	glGenTextures(1, &_cube);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, _cube);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-	for (GLuint i = 0; i < 6; ++i) {
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, 
-			_cubeMapSize, _cubeMapSize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	}
-	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-
-	// create framebuffer for rendering to the cubemap
-	glGenFramebuffers(1, &_cubeFbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, _cubeFbo);
-
-	// create depth buffer
-	glGenRenderbuffers(1, &_cubeDepthBuffer);
-	glBindRenderbuffer(GL_RENDERBUFFER, _cubeDepthBuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, _cubeMapSize, _cubeMapSize);
-
-	// complete framebuffer
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
-		GL_RENDERBUFFER, _cubeDepthBuffer);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-		GL_TEXTURE_CUBE_MAP_POSITIVE_X, _cube, 0);
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		std::cout << "Error: cubemap framebuffer is incomplete" << std::endl;
-	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	// create VAO for drawing a skybox
+void Renderer::createSkyboxBuffer() {
 	float skyboxVertices[] = {
 		-1.0f,  1.0f, -1.0f,
 		-1.0f, -1.0f, -1.0f,
@@ -451,4 +387,49 @@ void Renderer::initReflections() {
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
 		3 * sizeof(GLfloat), (GLvoid*)0);
+}
+
+void Renderer::buildCubemapFramebuffer() {
+	// create empty cubemap
+	glGenTextures(1, &_cube);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, _cube);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+	for (GLuint i = 0; i < 6; ++i) {
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA,
+			_cubeMapSize, _cubeMapSize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	}
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+	// create framebuffer for rendering to the cubemap
+	glGenFramebuffers(1, &_cubeFbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, _cubeFbo);
+
+	// create depth buffer
+	glGenRenderbuffers(1, &_cubeDepthBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, _cubeDepthBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, _cubeMapSize, _cubeMapSize);
+
+	// complete framebuffer
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+		GL_RENDERBUFFER, _cubeDepthBuffer);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+		GL_TEXTURE_CUBE_MAP_POSITIVE_X, _cube, 0);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		std::cout << "Error: cubemap framebuffer is incomplete" << std::endl;
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Renderer::handleEvent(EventType type, EventData data) {
+	switch (type) {
+	case EventType::WindowResize:
+		buildFramebuffers();
+		break;
+	}
 }

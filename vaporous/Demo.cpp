@@ -57,6 +57,8 @@ Demo::Demo() :
 	// initialize entities
 	_mainCam.setScreenSize(_window->getSize());
 	_mainCam.setFOV(75.0f);
+	_reflectionCam.setScreenSize(vec2(_renderer.getCubemapSize()));
+	_reflectionCam.setFOV(90.0f);
 	getNextCameraMovement();
 	getNextRoadSettings();
 	_car.init();
@@ -167,26 +169,24 @@ void Demo::setState(State state) {
 void Demo::draw() {
 	_window->beginDraw();
 
-	cubeCam.setFOV(90.0f);
-	cubeCam.setPosition(_car.getPosition() + vec3(0, 0.5f, 0));
-	cubeCam.setScreenSize(vec2(256, 256));
-	glViewport(0, 0, 256, 256);
+	// draw scene to cubemap for dynamic reflections
+	_reflectionCam.setPosition(_car.getPosition() + vec3(0, 0.5f, 0));
 	Camera* prevCam = _renderer.getCamera();
-	_renderer.setCamera(&cubeCam);
-	// reflection probe
+	_renderer.setCamera(&_reflectionCam);
 	for (GLuint i = 0; i < 6; ++i) {
-		cubeCam.setFaceIndex(i);
-		_renderer.beginCubemapDraw(i);
+		_reflectionCam.setFaceIndex(i);
+		_renderer.bindCubemapFace(i);
 		_renderer.drawSky();
 		_city.draw();
 		_resourceMgr.bindTexture(Textures::Rainbow);
 		_road.draw();
 	}
-	//
-	glViewport(0, 0, _window->getSize().x, _window->getSize().y);
 	_renderer.setCamera(prevCam);
+
+	// draw scene
 	_renderer.beginDraw();
 
+	_renderer.drawSky();
 	_city.draw();
 	_resourceMgr.bindTexture(Textures::CarDiffuse);
 	_resourceMgr.bindTexture(Textures::CarReflective, 1);

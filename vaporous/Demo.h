@@ -88,7 +88,7 @@ private:
 
 	// rendering
 	float _fade = 1.0f;
-	ReflectionCamera cubeCam;
+	ReflectionCamera _reflectionCam;
 
 	// debug
 	void toggleDebugMode();

@@ -21,6 +21,7 @@ public:
 	void init();
 	void setCamera(Camera* camera);
 	Camera* getCamera();
+	GLsizei getCubemapSize();
 	virtual void handleEvent(EventType type, EventData data) override;
 
 	void beginDraw();
@@ -32,16 +33,16 @@ public:
 		float alpha = 1.0f) const;
 	void drawAxis(Transformable* tform, float size = 1.0f);
 	void drawSky();
-	void beginCubemapDraw(GLuint faceIndex);
+	void bindCubemapFace(GLuint faceIndex);
 
 private:
 	void createPointBuffer();
 	void createLineBuffer();
 	void createCircleBuffer();
 	void createScreenBuffer();
+	void createSkyboxBuffer();
 	void buildFramebuffers();
-
-	void initReflections();
+	void buildCubemapFramebuffer();
 
 	Context* _context;
 	Camera* _activeCamera;
@@ -52,7 +53,7 @@ private:
 
 	GLuint _fbo, _colorBuffer, _depthBuffer;
 	GLuint _cube, _cubeFbo, _cubeDepthBuffer;
-	GLsizei _cubeMapSize = 256;
+	GLsizei _cubeMapSize = 512;
 
 	GLuint _pointVbo, _pointVao;
 	GLuint _lineVbo, _lineVao;
