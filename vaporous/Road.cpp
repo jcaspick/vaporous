@@ -73,7 +73,7 @@ void Road::buildMesh() {
 	}
 
 	// scale UVs
-	float textureScale = 12.0f;
+	float textureScale = 18.0f;
 	textureScale += fmod(_length, textureScale) / floor(_length / textureScale);
 	for (auto& vertex : _mesh.vertices) {
 		vertex.uv.y /= textureScale;

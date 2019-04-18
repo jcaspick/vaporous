@@ -21,6 +21,8 @@ void City::draw() {
 	_cityShader->setFloat("globalScale", _buildingScale);
 	_cityShader->setFloat("cityBottom", _cityBottom);
 	_cityShader->setFloat("time", static_cast<float>(glfwGetTime()));
+	_cityShader->setVec3("camPos", cam->getPosition());
+	_cityShader->setFloat("fogDist", 75.0f);
 
 	glDrawArraysInstanced(GL_TRIANGLES, 0, 30, _buildingTransforms.size());
 
@@ -68,10 +70,10 @@ void City::generateBuildings(float worldRadius, std::vector<vec3> samples) {
 	_buildingSizes.clear();
 	_buildingAppearances.clear();
 
-	int numBuildings = static_cast<int>(worldRadius) * 2;
+	int numBuildings = static_cast<int>(worldRadius) * 4;
 	for (int i = 0; i < numBuildings; ++i) {
 		// select random position and rotation for building
-		float distance = Util::randomRange(0.0f, worldRadius);
+		float distance = Util::randomRange(0.0f, worldRadius * 1.5f);
 		float angle = glm::radians(Util::randomRange(0.0f, 360.0f));
 		vec3 position = vec3(sin(angle) * distance, -24.0f, 
 			cos(angle) * distance) + _center;
@@ -219,7 +221,7 @@ void City::generateBg() {
 			glm::radians(a)));
 		_bgSizes.emplace_back(vec2(
 			Util::randomRange(16, 32),
-			Util::randomRange(48, 90)));
+			Util::randomRange(24, 45)));
 
 		a += Util::randomRange(0.7f, 2.4f);
 	}

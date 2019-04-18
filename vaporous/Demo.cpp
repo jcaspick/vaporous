@@ -27,7 +27,7 @@ Demo::Demo() :
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// create window & openGL context
-	_window = p_Window(new Window(1280, 720, "hello"));
+	_window = p_Window(new Window(1280, 720, "vaporous"));
 
 	// initialize GLAD
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {

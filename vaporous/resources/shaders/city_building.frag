@@ -13,6 +13,8 @@ uniform sampler2D windowColor;
 uniform sampler2D noise;
 uniform float cityBottom;
 uniform float time;
+uniform vec3 camPos;
+uniform float fogDist;
 
 void main()
 {
@@ -56,8 +58,12 @@ void main()
 		((sin(c + 3.0f) + 1.0f) * 0.5f) * 0.8f + 0.2f
 	);
 
+	// distance fog
+	float dist = length(worldPos - camPos);
+	float fog = min(1.0f, fogDist / dist);
+
 	// put everything together, plus a fade to black near the bottom
 	float heightIndex = (worldPos.y - cityBottom) / (totalHeight - cityBottom);
 	fragColor = vec4(mix(bottomColor, topColor, heightIndex) * isWindow
-		* isLit * min((worldPos.y * 0.1f - cityBottom * 0.1f), 1.0f), 1.0f);
+		* isLit * min((worldPos.y * 0.1f - cityBottom * 0.1f), 1.0f) * fog, 1.0f);
 }

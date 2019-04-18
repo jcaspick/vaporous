@@ -6,7 +6,8 @@ enum class Textures {
 	CarDiffuse,
 	CarReflective,
 	Sky,
-	Noise
+	Noise,
+	Watermark
 };
 
 enum class Shaders {

@@ -14,7 +14,7 @@ Renderer::~Renderer() {
 }
 
 void Renderer::init() {
-	// load shaders
+	// load resources
 	_debugShader = _context->resourceMgr->loadShader(Shaders::SingleColor,
 		"resources/shaders/basic.vert", "resources/shaders/basic_singleColor.frag");
 	_screenShader = _context->resourceMgr->loadShader(Shaders::Screen,
@@ -23,6 +23,8 @@ void Renderer::init() {
 		"resources/shaders/screen.vert", "resources/shaders/gradient_sky.frag");
 	_skyboxShader = _context->resourceMgr->loadShader(Shaders::Skybox,
 		"resources/shaders/skybox.vert", "resources/shaders/skybox.frag");
+	_context->resourceMgr->loadTexture(Textures::Watermark,
+		"resources/images/watermark.png", true, false);
 
 	// generate framebuffers
 	glGenFramebuffers(1, &_fbo);
@@ -77,8 +79,10 @@ void Renderer::endDraw(float fade) {
 	_context->gl->useShader(_screenShader->id);
 	_context->gl->bindVAO(_screenVao);
 	_context->gl->bindTexture0(_colorBuffer);
+	_context->resourceMgr->bindTexture(Textures::Watermark, 3);
 
 	_screenShader->setInt("mainTex", 0);
+	_screenShader->setInt("watermark", 3);
 	_screenShader->setVec2("window", _context->window->getSize());
 	_screenShader->setFloat("fade", fade);
 
